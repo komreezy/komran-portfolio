@@ -3,11 +3,10 @@ import Marquee from "@/components/Marquee";
 import Link from "next/link";
 
 const projects = [
-  { title: "Project Alpha", href: "#" },
-  { title: "Project Beta", href: "#" },
-  { title: "Project Gamma", href: "#" },
-  { title: "Project Delta", href: "#" },
-  { title: "Project Omega", href: "#" },
+  { title: "Julienne", href: "#" },
+  { title: "Savvy", href: "#" },
+  { title: "Featured", href: "#" },
+  { title: "Some new stuff I'm trying...", href: "/lab" },
 ];
 
 export default function Home() {
@@ -22,9 +21,9 @@ export default function Home() {
       {/* Hero Section */}
       <section className="flex-1 flex items-center justify-center px-8">
         <p className="text-xs uppercase tracking-wide text-center leading-relaxed max-w-sm mx-auto">
-          Komran is a brand and digital design lead who turns complex ideas into
-          clear, emotional brands through strategy, storytelling, and
-          experimentation.
+          I'm an iOS engineer by trade, obsessively curious by nature. I build
+          things, ship relentlessly, and chase ideas from the back of the napkin
+          to production. Always iterating.
         </p>
       </section>
 
@@ -34,11 +33,11 @@ export default function Home() {
           {projects.map((project) => (
             <li
               key={project.title}
-              className="border-t border-[var(--border)] py-4 flex items-center justify-between group"
+              className="border-t border-[var(--border)] py-4 px-2 flex items-center justify-between group hover:bg-[var(--foreground)] hover:text-[var(--background)] transition-smooth"
             >
               <Link
                 href={project.href}
-                className="text-xs uppercase tracking-wide hover:opacity-60 transition-smooth"
+                className="text-xs uppercase tracking-wide transition-smooth"
               >
                 {project.title}
               </Link>

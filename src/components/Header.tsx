@@ -4,7 +4,7 @@ import Link from "next/link";
 
 const navLinks = [
   { label: "Work", href: "/" },
-  { label: "Play", href: "/play" },
+  { label: "Lab", href: "/lab" },
   { label: "About", href: "/about" },
   { label: "Reach out", href: "mailto:hello@example.com" },
   { label: "CV", href: "/cv.pdf" },
@@ -27,7 +27,7 @@ export default function Header() {
           <Link
             key={link.label}
             href={link.href}
-            className="text-xs uppercase tracking-wide hover:opacity-60 transition-smooth"
+            className="text-xs uppercase tracking-wide px-2 py-1 hover:bg-[var(--foreground)] hover:text-[var(--background)] transition-smooth"
           >
             {link.label}
           </Link>
