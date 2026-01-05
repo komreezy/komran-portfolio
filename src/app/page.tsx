@@ -12,7 +12,7 @@ const projects = [
 
 export default function Home() {
   return (
-    <main className="min-h-screen">
+    <main className="h-screen overflow-hidden flex flex-col">
       {/* Marquee */}
       <Marquee />
 
@@ -20,17 +20,17 @@ export default function Home() {
       <Header />
 
       {/* Hero Section */}
-      <section className="min-h-screen flex items-center justify-center px-8 pt-24">
-        <p className="text-xs uppercase tracking-wide text-center max-w-md leading-relaxed">
+      <section className="flex-1 flex items-center justify-center px-8">
+        <p className="text-xs uppercase tracking-wide text-center leading-relaxed max-w-sm mx-auto">
           Komran is a brand and digital design lead who turns complex ideas into
           clear, emotional brands through strategy, storytelling, and
           experimentation.
         </p>
       </section>
 
-      {/* Project List */}
-      <section className="px-8 pb-24">
-        <ul className="flex flex-col">
+      {/* Project List - Fixed to bottom */}
+      <section className="px-8 pb-6 bg-[var(--background)]">
+        <ul className="flex flex-col max-w-sm mx-auto">
           {projects.map((project) => (
             <li
               key={project.title}
@@ -52,27 +52,6 @@ export default function Home() {
           ))}
         </ul>
       </section>
-
-      {/* Footer */}
-      <footer className="fixed bottom-0 left-0 right-0 px-8 py-6 flex items-center justify-between bg-[var(--background)]">
-        <span className="text-xs uppercase tracking-wide">
-          Based in Your City
-        </span>
-        <div className="flex items-center gap-2">
-          <svg
-            className="w-4 h-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <circle cx="12" cy="12" r="10" strokeWidth="1" />
-            <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" strokeWidth="1" />
-          </svg>
-          <span className="text-xs uppercase tracking-wide">
-            Working Worldwide
-          </span>
-        </div>
-      </footer>
     </main>
   );
 }
