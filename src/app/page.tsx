@@ -21,9 +21,9 @@ export default function Home() {
       {/* Hero Section */}
       <section className="flex-1 flex items-center justify-center px-8">
         <p className="text-xs uppercase tracking-wide text-center leading-relaxed max-w-sm mx-auto">
-          I'm an iOS engineer by trade, obsessively curious by nature. I build
-          things, ship relentlessly, and chase ideas from the back of the napkin
-          to production. Always iterating.
+          Software engineer by trade, obsessively curious by nature. I build
+          things, ship often, and chase ideas from the back of the napkin
+          to the real world.
         </p>
       </section>
 
