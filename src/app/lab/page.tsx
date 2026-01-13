@@ -1,8 +1,9 @@
 import Header from "@/components/Header";
 import Marquee from "@/components/Marquee";
-import Avatar3D from "@/components/Avatar3D";
+import LabProjectCard from "@/components/LabProjectCard";
+import { labProjects } from "@/data/labProjects";
 
-export default function Play() {
+export default function Lab() {
   return (
     <main className="min-h-screen">
       {/* Marquee */}
@@ -12,11 +13,21 @@ export default function Play() {
       <Header />
 
       {/* Content */}
-      <section className="min-h-screen flex flex-col items-center justify-center px-8 pt-24">
-        <Avatar3D />
-        <p className="text-xs uppercase tracking-wide text-center mt-4">
-          Interactive 3D Avatar
-        </p>
+      <section className="px-8 pt-32 pb-16">
+        {/* Page Title */}
+        <div className="max-w-4xl mx-auto mb-12">
+          <h1 className="text-xs uppercase tracking-wide mb-2">Lab</h1>
+          <p className="text-xs uppercase tracking-wide text-[var(--foreground)]/60">
+            Experiments, prototypes, and side projects
+          </p>
+        </div>
+
+        {/* Project Grid */}
+        <div className="max-w-4xl mx-auto grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {labProjects.map((project) => (
+            <LabProjectCard key={project.id} project={project} />
+          ))}
+        </div>
       </section>
     </main>
   );
