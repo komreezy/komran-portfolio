@@ -5,13 +5,16 @@ import { Canvas, useFrame } from "@react-three/fiber";
 import { useGLTF, useAnimations } from "@react-three/drei";
 import * as THREE from "three";
 
-// Keyboard state hook - simplified, no shift
+// Keyboard state hook
 function useKeyboard() {
   const [keys, setKeys] = useState({
     forward: false,
     backward: false,
     left: false,
     right: false,
+    jump: false,
+    attack: false,
+    sprint: false,
   });
 
   useEffect(() => {
@@ -21,6 +24,9 @@ function useKeyboard() {
       if (key === "s" || key === "arrowdown") setKeys((prev) => ({ ...prev, backward: true }));
       if (key === "a" || key === "arrowleft") setKeys((prev) => ({ ...prev, left: true }));
       if (key === "d" || key === "arrowright") setKeys((prev) => ({ ...prev, right: true }));
+      if (key === " ") setKeys((prev) => ({ ...prev, jump: true }));
+      if (key === "e") setKeys((prev) => ({ ...prev, attack: true }));
+      if (key === "shift") setKeys((prev) => ({ ...prev, sprint: true }));
     };
 
     const handleKeyUp = (e: KeyboardEvent) => {
@@ -29,6 +35,9 @@ function useKeyboard() {
       if (key === "s" || key === "arrowdown") setKeys((prev) => ({ ...prev, backward: false }));
       if (key === "a" || key === "arrowleft") setKeys((prev) => ({ ...prev, left: false }));
       if (key === "d" || key === "arrowright") setKeys((prev) => ({ ...prev, right: false }));
+      if (key === " ") setKeys((prev) => ({ ...prev, jump: false }));
+      if (key === "e") setKeys((prev) => ({ ...prev, attack: false }));
+      if (key === "shift") setKeys((prev) => ({ ...prev, sprint: false }));
     };
 
     window.addEventListener("keydown", handleKeyDown);
@@ -48,6 +57,9 @@ interface CharacterProps {
     backward: boolean;
     left: boolean;
     right: boolean;
+    jump: boolean;
+    attack: boolean;
+    sprint: boolean;
   };
 }
 
@@ -59,6 +71,7 @@ function Character({ keys }: CharacterProps) {
   // Track if we've initialized
   const hasInitialized = useRef(false);
   const currentActionRef = useRef<string | null>(null);
+  const isPlayingOneShot = useRef(false);
 
   // Initialize with idle - runs once when actions are ready
   useEffect(() => {
@@ -83,30 +96,92 @@ function Character({ keys }: CharacterProps) {
     }
   }, [actions, mixer]);
 
+  // One-shot animations (jump, attack) - play once then return to base state
+  useEffect(() => {
+    if (!actions || isPlayingOneShot.current) return;
+
+    // Meshy mislabeling: "Idle_02" = Run_and_Jump, "Running" = Counterstrike
+    let oneShotAction: string | null = null;
+    if (keys.jump) {
+      oneShotAction = "Idle_02"; // Actually Run_and_Jump
+    } else if (keys.attack) {
+      oneShotAction = "Running"; // Actually Counterstrike
+    }
+
+    if (oneShotAction && actions[oneShotAction]) {
+      isPlayingOneShot.current = true;
+
+      // Fade out current animation
+      if (currentActionRef.current) {
+        const currentAction = actions[currentActionRef.current];
+        if (currentAction) {
+          currentAction.fadeOut(0.1);
+        }
+      }
+
+      // Play one-shot animation
+      const action = actions[oneShotAction];
+      if (!action) return;
+
+      action.reset();
+      action.setLoop(THREE.LoopOnce, 1);
+      action.clampWhenFinished = true;
+      action.fadeIn(0.1).play();
+
+      // When finished, return to base animation
+      const onFinished = () => {
+        isPlayingOneShot.current = false;
+        const isMoving = keys.forward || keys.backward || keys.left || keys.right;
+        // Mirror_Viewing = Running, Run_and_Jump = Walking
+        const baseAction = isMoving ? (keys.sprint ? "Mirror_Viewing" : "Run_and_Jump") : "Walking";
+        const baseAnimAction = actions[baseAction];
+        if (baseAnimAction) {
+          action.fadeOut(0.2);
+          baseAnimAction.reset().fadeIn(0.2).play();
+          currentActionRef.current = baseAction;
+        }
+        mixer.removeEventListener("finished", onFinished);
+      };
+      mixer.addEventListener("finished", onFinished);
+    }
+  }, [keys.jump, keys.attack, actions, mixer, keys.forward, keys.backward, keys.left, keys.right, keys.sprint]);
+
   // Animation switching - corrected for Meshy mislabeling
   useEffect(() => {
+    // Don't switch if playing a one-shot animation
+    if (isPlayingOneShot.current) return;
+
     const isMoving = keys.forward || keys.backward || keys.left || keys.right;
 
-    // Meshy labels are wrong: "Run_and_Jump" = actual Walking, "Walking" = actual Idle_02
-    const targetAction = isMoving ? "Run_and_Jump" : "Walking";
+    // Meshy labels: "Run_and_Jump" = Walking, "Mirror_Viewing" = Running, "Walking" = Idle_02
+    let targetAction: string;
+    if (isMoving) {
+      targetAction = keys.sprint ? "Mirror_Viewing" : "Run_and_Jump";
+    } else {
+      targetAction = "Walking";
+    }
 
-    if (targetAction && actions[targetAction] && targetAction !== currentActionRef.current) {
+    const targetAnimAction = actions[targetAction];
+    if (targetAction && targetAnimAction && targetAction !== currentActionRef.current) {
       // Fade out current animation
-      if (currentActionRef.current && actions[currentActionRef.current]) {
-        actions[currentActionRef.current].fadeOut(0.2);
+      if (currentActionRef.current) {
+        const currentAction = actions[currentActionRef.current];
+        if (currentAction) {
+          currentAction.fadeOut(0.2);
+        }
       }
       // Fade in new animation
-      actions[targetAction].reset().fadeIn(0.2).play();
+      targetAnimAction.reset().fadeIn(0.2).play();
       currentActionRef.current = targetAction;
     }
-  }, [keys.forward, keys.backward, keys.left, keys.right, actions]);
+  }, [keys.forward, keys.backward, keys.left, keys.right, keys.sprint, actions]);
 
   // Movement and rotation
   useFrame((_, delta) => {
     if (!groupRef.current) return;
 
-    // Slower speed to match walk animation pace
-    const speed = 1.5;
+    // Speed adjusts for walking vs running
+    const speed = keys.sprint ? 3.5 : 1.5;
     const rotationSpeed = 2.5;
 
     // Rotation
@@ -169,14 +244,14 @@ function Ground() {
   return (
     <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -1, 0]} receiveShadow>
       <planeGeometry args={[20, 20]} />
-      <meshStandardMaterial color="#1a1a1a" roughness={0.8} />
+      <meshStandardMaterial color="#c8d0d8" roughness={0.8} />
     </mesh>
   );
 }
 
 // Grid helper for visual reference
 function GridHelper() {
-  return <gridHelper args={[20, 20, "#333333", "#222222"]} position={[0, -0.99, 0]} />;
+  return <gridHelper args={[20, 20, "#9ca3af", "#b0b8c0"]} position={[0, -0.99, 0]} />;
 }
 
 export default function Avatar3D() {
@@ -195,6 +270,9 @@ export default function Avatar3D() {
         <div className="text-white/80 mb-1">CONTROLS</div>
         <div className="text-white/60">W/S - Forward/Back</div>
         <div className="text-white/60">A/D - Turn Left/Right</div>
+        <div className="text-white/60">SHIFT - Run</div>
+        <div className="text-white/60">SPACE - Jump</div>
+        <div className="text-white/60">E - Attack</div>
       </div>
 
       {/* Focus indicator */}
