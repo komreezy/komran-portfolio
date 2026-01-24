@@ -4,26 +4,43 @@ import { MDXRemote } from "next-mdx-remote/rsc";
 import Header from "@/components/Header";
 import Marquee from "@/components/Marquee";
 import { MDXComponents } from "@/components/MDXComponents";
-import { getPostBySlug, getAllSlugs } from "@/lib/mdx";
+import { createClient } from "@supabase/supabase-js";
+
+export const revalidate = 60;
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
 
 interface Props {
   params: Promise<{ slug: string }>;
 }
 
 export async function generateStaticParams() {
-  const slugs = getAllSlugs();
-  return slugs.map((slug) => ({ slug }));
+  const { data: posts } = await supabase
+    .from("posts")
+    .select("slug")
+    .eq("published", true);
+
+  return posts?.map((post) => ({ slug: post.slug })) || [];
 }
 
 export default async function BlogPostPage({ params }: Props) {
   const { slug } = await params;
-  const post = getPostBySlug(slug);
+
+  const { data: post } = await supabase
+    .from("posts")
+    .select("*")
+    .eq("slug", slug)
+    .eq("published", true)
+    .single();
 
   if (!post) {
     notFound();
   }
 
-  const formattedDate = new Date(post.date).toLocaleDateString("en-US", {
+  const formattedDate = new Date(post.created_at).toLocaleDateString("en-US", {
     year: "numeric",
     month: "long",
     day: "numeric",
@@ -49,7 +66,7 @@ export default async function BlogPostPage({ params }: Props) {
           </time>
           {post.tags && post.tags.length > 0 && (
             <div className="flex gap-2 mt-4">
-              {post.tags.map((tag) => (
+              {post.tags.map((tag: string) => (
                 <span
                   key={tag}
                   className="text-xs uppercase tracking-wide px-2 py-0.5 bg-[var(--foreground)]/5"

@@ -1,10 +1,21 @@
 import Header from "@/components/Header";
 import Marquee from "@/components/Marquee";
 import BlogPostCard from "@/components/BlogPostCard";
-import { getAllPosts } from "@/lib/mdx";
+import { createClient } from "@supabase/supabase-js";
 
-export default function BlogPage() {
-  const posts = getAllPosts();
+export const revalidate = 60; // Revalidate every 60 seconds
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
+
+export default async function BlogPage() {
+  const { data: posts } = await supabase
+    .from("posts")
+    .select("*")
+    .eq("published", true)
+    .order("created_at", { ascending: false });
 
   return (
     <main className="min-h-screen">
@@ -19,7 +30,7 @@ export default function BlogPage() {
           </p>
         </div>
 
-        {posts.length > 0 ? (
+        {posts && posts.length > 0 ? (
           <div>
             {posts.map((post) => (
               <BlogPostCard key={post.slug} post={post} />

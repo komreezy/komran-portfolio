@@ -1,12 +1,17 @@
 import Link from "next/link";
-import { BlogPostMeta } from "@/data/blogPosts";
 
 interface BlogPostCardProps {
-  post: BlogPostMeta;
+  post: {
+    slug: string;
+    title: string;
+    description?: string | null;
+    tags?: string[] | null;
+    created_at: string;
+  };
 }
 
 export default function BlogPostCard({ post }: BlogPostCardProps) {
-  const formattedDate = new Date(post.date).toLocaleDateString("en-US", {
+  const formattedDate = new Date(post.created_at).toLocaleDateString("en-US", {
     year: "numeric",
     month: "long",
     day: "numeric",
