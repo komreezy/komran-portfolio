@@ -14,7 +14,7 @@ const COLORS = [
 ];
 
 const MAX_DPR = 2;
-const CURSOR_GLOW_RADIUS = 220;
+const CURSOR_GLOW_RADIUS = 0;
 
 export default function GradientBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -55,12 +55,12 @@ export default function GradientBackground() {
     ) => {
       // Calculate target intensity based on velocity (reduced sensitivity)
       const velocityFactor = Math.min(velocity / 25, 1); // Increased from 15 for smoother response
-      const baseIntensity = 0.12;
-      const intensityBoost = velocityFactor * 0.08; // Reduced from 0.1
+      const baseIntensity = 0.25; // Brighter for tablecloth lift effect
+      const intensityBoost = velocityFactor * 0.1;
       const targetIntensity = baseIntensity + intensityBoost;
 
       // Lerp current intensity towards target for smooth fade in/out
-      const lerpSpeed = 0.05; // Slow lerping for gradual changes
+      const lerpSpeed = 0.02; // Even slower lerping for gradual transitions
       cursorGlowIntensityRef.current += (targetIntensity - cursorGlowIntensityRef.current) * lerpSpeed;
       const intensity = cursorGlowIntensityRef.current;
 

@@ -32,16 +32,16 @@ export function useGradientAnimation() {
       {
         x: width * 0.3,
         y: height * 0.3,
-        baseX: width * 0.3,
-        baseY: height * 0.3,
+        baseX: width * 1.3,
+        baseY: height * 1.3,
         radius: Math.max(width, height) * 0.4,
-        opacity: 0.15,
+        opacity: 0.4,
         phaseX: 0,
         phaseY: Math.PI / 3,
-        speedX: 0.00015, // Slowed from 0.0003
-        speedY: 0.0002,  // Slowed from 0.0004
-        amplitudeX: width * 0.15,
-        amplitudeY: height * 0.12,
+        speedX: 0.00008, // Very slow individual movement
+        speedY: 0.0001,
+        amplitudeX: width * 0.2,
+        amplitudeY: height * 0.18,
         colorIndex: 0, // Purple
       },
       {
@@ -50,13 +50,13 @@ export function useGradientAnimation() {
         baseX: width * 0.7,
         baseY: height * 0.6,
         radius: Math.max(width, height) * 0.35,
-        opacity: 0.18,
+        opacity: 0.45,
         phaseX: Math.PI / 2,
         phaseY: Math.PI,
-        speedX: 0.000175, // Slowed from 0.00035
-        speedY: 0.000125, // Slowed from 0.00025
-        amplitudeX: width * 0.12,
-        amplitudeY: height * 0.15,
+        speedX: 0.00009,
+        speedY: 0.00007,
+        amplitudeX: width * 0.18,
+        amplitudeY: height * 0.2,
         colorIndex: 1, // Blue
       },
       {
@@ -65,13 +65,13 @@ export function useGradientAnimation() {
         baseX: width * 0.5,
         baseY: height * 0.8,
         radius: Math.max(width, height) * 0.3,
-        opacity: 0.12,
+        opacity: 0.35,
         phaseX: Math.PI,
         phaseY: Math.PI / 4,
-        speedX: 0.000125, // Slowed from 0.00025
-        speedY: 0.000175, // Slowed from 0.00035
-        amplitudeX: width * 0.1,
-        amplitudeY: height * 0.1,
+        speedX: 0.00006,
+        speedY: 0.00008,
+        amplitudeX: width * 0.15,
+        amplitudeY: height * 0.15,
         colorIndex: 2, // Pink
       },
     ];
@@ -102,14 +102,19 @@ export function useGradientAnimation() {
     ) => {
       const state = getState(width, height);
       state.time += deltaTime;
-      state.globalPhase += deltaTime * 0.00008; // Slow global phase for flowing effect
+      state.globalPhase += deltaTime * 0.0003; // Visible flow speed
 
-      // Calculate global flow offsets - creates a unified "breathing" movement
-      const globalOffsetX = Math.sin(state.globalPhase) * width * 0.02;
-      const globalOffsetY = Math.cos(state.globalPhase * 0.75) * height * 0.015;
+      // Multiple wave frequencies for organic, wavy movement
+      const wave1X = Math.sin(state.globalPhase) * width * 0.08;
+      const wave1Y = Math.cos(state.globalPhase * 0.7) * height * 0.06;
+      const wave2X = Math.sin(state.globalPhase * 1.5 + Math.PI / 4) * width * 0.04;
+      const wave2Y = Math.cos(state.globalPhase * 1.3) * height * 0.03;
 
-      // Breathing scale factor (subtle expansion/contraction)
-      const breathingScale = 1 + Math.sin(state.globalPhase * 1.2) * 0.03;
+      const globalOffsetX = wave1X + wave2X;
+      const globalOffsetY = wave1Y + wave2Y;
+
+      // Breathing scale factor (noticeable expansion/contraction)
+      const breathingScale = 1 + Math.sin(state.globalPhase * 0.8) * 0.12;
 
       state.blobs.forEach((blob, index) => {
         // Update phases for Lissajous curves
@@ -117,10 +122,10 @@ export function useGradientAnimation() {
         blob.phaseY += blob.speedY * deltaTime;
 
         // Calculate autonomous position with global flow offset
-        // Each blob gets a slightly phase-shifted global offset for organic feel
-        const phaseOffset = index * (Math.PI / 3);
-        const blobGlobalX = globalOffsetX * Math.cos(state.globalPhase + phaseOffset);
-        const blobGlobalY = globalOffsetY * Math.sin(state.globalPhase + phaseOffset);
+        // Each blob gets a phase-shifted global offset for organic flowing feel
+        const phaseOffset = index * (Math.PI / 2.5);
+        const blobGlobalX = globalOffsetX * (0.7 + 0.3 * Math.cos(state.globalPhase + phaseOffset));
+        const blobGlobalY = globalOffsetY * (0.7 + 0.3 * Math.sin(state.globalPhase * 0.8 + phaseOffset));
 
         let targetX = blob.baseX + Math.sin(blob.phaseX) * blob.amplitudeX + blobGlobalX;
         let targetY = blob.baseY + Math.cos(blob.phaseY) * blob.amplitudeY + blobGlobalY;
@@ -128,17 +133,28 @@ export function useGradientAnimation() {
         // Apply breathing scale to radius (subtle)
         blob.radius = Math.max(width, height) * (0.3 + index * 0.05) * breathingScale;
 
-        // Mouse attraction (gentler - reduced from 0.08 to 0.04)
-        if (mouseX !== null && mouseY !== null && !reducedMotion) {
-          const dx = mouseX - targetX;
-          const dy = mouseY - targetY;
-          const distance = Math.sqrt(dx * dx + dy * dy);
-          const maxDistance = Math.max(width, height) * 0.5;
+        // Tablecloth effect: push blobs outward from cursor (creates "lift" effect)
+        const baseOpacity = [0.4, 0.45, 0.35][index];
+        blob.opacity = baseOpacity; // Reset to base
 
-          if (distance < maxDistance) {
-            const attraction = 0.04 * (1 - distance / maxDistance); // Reduced from 0.08
-            targetX += dx * attraction;
-            targetY += dy * attraction;
+        if (mouseX !== null && mouseY !== null && !reducedMotion) {
+          const dx = targetX - mouseX; // Reversed: blob position minus mouse = outward direction
+          const dy = targetY - mouseY;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+          const effectRadius = Math.max(width, height) * 0.4;
+
+          if (distance < effectRadius && distance > 0) {
+            // Smooth quadratic falloff from center
+            const strength = Math.pow(1 - distance / effectRadius, 2);
+            const displacement = 80 * strength; // Push outward
+            const normalX = dx / distance;
+            const normalY = dy / distance;
+
+            targetX += normalX * displacement;
+            targetY += normalY * displacement;
+
+            // Increase opacity near cursor for "lift" visual
+            blob.opacity = baseOpacity + strength * 0.15;
           }
         }
 
