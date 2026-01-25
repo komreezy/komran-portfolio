@@ -32,7 +32,7 @@ export default function Home() {
       </section>
 
       {/* Project List - Fixed to bottom */}
-      <section className="px-8 pb-6 bg-[var(--background)]">
+      <section className="px-8 pb-6">
         <ul className="flex flex-col max-w-sm mx-auto">
           {projects.map((project) => (
             <li
