@@ -19,8 +19,8 @@ interface TrailRipple {
 }
 
 const THROTTLE_MS = 16; // ~60fps
-const RIPPLE_DURATION = 800; // Faster ripples for snappier feel
-const TRAIL_SPAWN_DISTANCE = 50; // Spawn ripple every 50px of movement
+const RIPPLE_DURATION = 1500; // Slower ripples for calmer feel (was 800)
+const TRAIL_SPAWN_DISTANCE = 80; // Less frequent ripples (was 50)
 const MIN_RIPPLE_RADIUS = 80;
 const MAX_RIPPLE_RADIUS = 250;
 const BASE_OPACITY = 0.08;
@@ -152,8 +152,8 @@ export function useMouseRipple(canvasRef: React.RefObject<HTMLCanvasElement | nu
       if (elapsed > RIPPLE_DURATION) return false;
 
       const progress = elapsed / RIPPLE_DURATION;
-      ripple.radius = ripple.maxRadius * easeOutCubic(progress);
-      ripple.opacity = BASE_OPACITY * (1 - progress);
+      ripple.radius = ripple.maxRadius * easeOutQuart(progress);
+      ripple.opacity = BASE_OPACITY * (1 - easeOutQuart(progress)); // Smoother fade
       return true;
     });
 
@@ -163,6 +163,7 @@ export function useMouseRipple(canvasRef: React.RefObject<HTMLCanvasElement | nu
   return { getMousePosition, getVelocity, updateRipples };
 }
 
-function easeOutCubic(x: number): number {
-  return 1 - Math.pow(1 - x, 3);
+// Smoother easing function for slower, more elegant ripples
+function easeOutQuart(x: number): number {
+  return 1 - Math.pow(1 - x, 4);
 }

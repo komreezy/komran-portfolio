@@ -21,6 +21,7 @@ export default function GradientBackground() {
   const animationRef = useRef<number | null>(null);
   const lastTimeRef = useRef<number>(0);
   const reducedMotionRef = useRef<boolean>(false);
+  const cursorGlowIntensityRef = useRef<number>(0); // For smooth intensity lerping
 
   const { updateBlobs, resetBlobs } = useGradientAnimation();
   const { getMousePosition, getVelocity, updateRipples } = useMouseRipple(canvasRef);
@@ -52,11 +53,16 @@ export default function GradientBackground() {
       width: number,
       height: number
     ) => {
-      // Scale glow intensity based on velocity
-      const velocityFactor = Math.min(velocity / 15, 1);
+      // Calculate target intensity based on velocity (reduced sensitivity)
+      const velocityFactor = Math.min(velocity / 25, 1); // Increased from 15 for smoother response
       const baseIntensity = 0.12;
-      const intensityBoost = velocityFactor * 0.1;
-      const intensity = baseIntensity + intensityBoost;
+      const intensityBoost = velocityFactor * 0.08; // Reduced from 0.1
+      const targetIntensity = baseIntensity + intensityBoost;
+
+      // Lerp current intensity towards target for smooth fade in/out
+      const lerpSpeed = 0.05; // Slow lerping for gradual changes
+      cursorGlowIntensityRef.current += (targetIntensity - cursorGlowIntensityRef.current) * lerpSpeed;
+      const intensity = cursorGlowIntensityRef.current;
 
       // Draw multiple overlapping color glows for prismatic effect
       const offsets = [
