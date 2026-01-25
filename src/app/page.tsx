@@ -1,7 +1,7 @@
 import Header from "@/components/Header";
 import Marquee from "@/components/Marquee";
 import Link from "next/link";
-import GravityCube from "@/components/GravityCube";
+import GradientBackground from "@/components/GradientBackground";
 
 const projects = [
   { title: "Julienne", href: "#" },
@@ -13,8 +13,8 @@ const projects = [
 export default function Home() {
   return (
     <main className="h-screen overflow-hidden flex flex-col">
-      {/* 3D Background */}
-      <GravityCube />
+      {/* Gradient Background */}
+      <GradientBackground />
 
       {/* Marquee */}
       <Marquee />

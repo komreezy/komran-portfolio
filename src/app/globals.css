@@ -55,3 +55,21 @@ body {
 .transition-smooth {
   transition: all 0.3s cubic-bezier(0.61, 1, 0.88, 1);
 }
+
+/* Game mode - no focus outlines, no scroll */
+.game-active {
+  overflow: hidden;
+}
+
+.game-active *:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Remove focus outline for game elements */
+[data-game-element]:focus,
+[data-game-element] *:focus {
+  outline: none !important;
+  box-shadow: none !important;
+  -webkit-tap-highlight-color: transparent;
+}
