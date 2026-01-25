@@ -3,6 +3,7 @@
 import { useRef, useEffect, useCallback } from "react";
 import { useGradientAnimation } from "./useGradientAnimation";
 import { useMouseRipple } from "./useMouseRipple";
+import { useHexGrid } from "./useHexGrid";
 
 // Multi-color palette
 const COLORS = [
@@ -25,6 +26,7 @@ export default function GradientBackground() {
 
   const { updateBlobs, resetBlobs } = useGradientAnimation();
   const { getMousePosition, getVelocity, updateRipples } = useMouseRipple(canvasRef);
+  const { updateGrid, resetGrid, config: hexConfig } = useHexGrid();
 
   const setupCanvas = useCallback(() => {
     const canvas = canvasRef.current;
@@ -163,6 +165,57 @@ export default function GradientBackground() {
     []
   );
 
+  const drawHexGrid = useCallback(
+    (
+      ctx: CanvasRenderingContext2D,
+      width: number,
+      height: number,
+      mouseX: number | null,
+      mouseY: number | null,
+      reducedMotion: boolean
+    ) => {
+      const gridState = updateGrid(width, height, mouseX, mouseY, reducedMotion);
+      const { vertices, edges } = gridState;
+      const { LINE_BASE_OPACITY, LINE_LIFT_OPACITY, MAX_DISPLACEMENT } = hexConfig;
+
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+
+      edges.forEach(([idx1, idx2]) => {
+        const v1 = vertices[idx1];
+        const v2 = vertices[idx2];
+
+        // Skip edges entirely outside viewport
+        if ((v1.x < -100 && v2.x < -100) ||
+            (v1.x > width + 100 && v2.x > width + 100) ||
+            (v1.y < -100 && v2.y < -100) ||
+            (v1.y > height + 100 && v2.y > height + 100)) {
+          return;
+        }
+
+        // Calculate opacity based on displacement
+        const avgDisplacement = (v1.displacement + v2.displacement) / 2;
+        const displacementRatio = avgDisplacement / MAX_DISPLACEMENT;
+        const opacity = LINE_BASE_OPACITY + displacementRatio * (LINE_LIFT_OPACITY - LINE_BASE_OPACITY);
+
+        // Choose color based on position for subtle variation
+        const colorIndex = Math.abs(Math.floor((v1.baseX + v1.baseY) / 200)) % COLORS.length;
+        const color = COLORS[colorIndex];
+
+        ctx.beginPath();
+        ctx.moveTo(v1.x, v1.y);
+        ctx.lineTo(v2.x, v2.y);
+
+        // Line width increases slightly with displacement
+        ctx.lineWidth = 0.5 + displacementRatio * 1;
+
+        ctx.strokeStyle = `rgba(${color.r}, ${color.g}, ${color.b}, ${opacity})`;
+        ctx.stroke();
+      });
+    },
+    [updateGrid, hexConfig]
+  );
+
   const draw = useCallback(
     (
       ctx: CanvasRenderingContext2D,
@@ -178,55 +231,62 @@ export default function GradientBackground() {
       const velocity = getVelocity();
 
       // Update and draw blobs
-      const blobs = updateBlobs(
-        deltaTime,
-        width,
-        height,
-        mouseX,
-        mouseY,
-        reducedMotionRef.current
-      );
+      // TEMPORARILY DISABLED
+      // const blobs = updateBlobs(
+      //   deltaTime,
+      //   width,
+      //   height,
+      //   mouseX,
+      //   mouseY,
+      //   reducedMotionRef.current
+      // );
 
-      blobs.forEach((blob) => {
-        const color = COLORS[blob.colorIndex % COLORS.length];
-        const gradient = ctx.createRadialGradient(
-          blob.x,
-          blob.y,
-          0,
-          blob.x,
-          blob.y,
-          blob.radius
-        );
+      // blobs.forEach((blob) => {
+      //   const color = COLORS[blob.colorIndex % COLORS.length];
+      //   const gradient = ctx.createRadialGradient(
+      //     blob.x,
+      //     blob.y,
+      //     0,
+      //     blob.x,
+      //     blob.y,
+      //     blob.radius
+      //   );
 
-        gradient.addColorStop(
-          0,
-          `rgba(${color.r}, ${color.g}, ${color.b}, ${blob.opacity})`
-        );
-        gradient.addColorStop(
-          0.5,
-          `rgba(${color.r}, ${color.g}, ${color.b}, ${blob.opacity * 0.5})`
-        );
-        gradient.addColorStop(
-          1,
-          `rgba(${color.r}, ${color.g}, ${color.b}, 0)`
-        );
+      //   gradient.addColorStop(
+      //     0,
+      //     `rgba(${color.r}, ${color.g}, ${color.b}, ${blob.opacity})`
+      //   );
+      //   gradient.addColorStop(
+      //     0.5,
+      //     `rgba(${color.r}, ${color.g}, ${color.b}, ${blob.opacity * 0.5})`
+      //   );
+      //   gradient.addColorStop(
+      //     1,
+      //     `rgba(${color.r}, ${color.g}, ${color.b}, 0)`
+      //   );
 
-        ctx.fillStyle = gradient;
-        ctx.fillRect(0, 0, width, height);
-      });
+      //   ctx.fillStyle = gradient;
+      //   ctx.fillRect(0, 0, width, height);
+      // });
+
+      // Draw hexagonal grid with lift effect
+      if (!reducedMotionRef.current) {
+        drawHexGrid(ctx, width, height, mouseX, mouseY, reducedMotionRef.current);
+      }
 
       // Draw trail ripples with multi-ring effect
-      const ripples = updateRipples(performance.now());
-      ripples.forEach((ripple) => {
-        drawMultiRingRipple(ctx, ripple, width, height);
-      });
+      // TEMPORARILY DISABLED
+      // const ripples = updateRipples(performance.now());
+      // ripples.forEach((ripple) => {
+      //   drawMultiRingRipple(ctx, ripple, width, height);
+      // });
 
       // Draw cursor displacement glow
       if (mouseX !== null && mouseY !== null && !reducedMotionRef.current) {
         drawCursorGlow(ctx, mouseX, mouseY, velocity, width, height);
       }
     },
-    [getMousePosition, getVelocity, updateBlobs, updateRipples, drawCursorGlow, drawMultiRingRipple]
+    [getMousePosition, getVelocity, updateBlobs, updateRipples, drawCursorGlow, drawMultiRingRipple, drawHexGrid]
   );
 
   const animate = useCallback(
@@ -267,6 +327,7 @@ export default function GradientBackground() {
 
     const { width, height } = setup;
     resetBlobs(width, height);
+    resetGrid(width, height);
 
     // Start animation
     animationRef.current = requestAnimationFrame(animate);
@@ -276,6 +337,7 @@ export default function GradientBackground() {
       const newSetup = setupCanvas();
       if (newSetup) {
         resetBlobs(newSetup.width, newSetup.height);
+        resetGrid(newSetup.width, newSetup.height);
       }
     };
 
@@ -288,7 +350,7 @@ export default function GradientBackground() {
       window.removeEventListener("resize", handleResize);
       mediaQuery.removeEventListener("change", handleMotionChange);
     };
-  }, [setupCanvas, resetBlobs, animate]);
+  }, [setupCanvas, resetBlobs, resetGrid, animate]);
 
   return (
     <canvas

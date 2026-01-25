@@ -25,9 +25,7 @@ export default function Home() {
       {/* Hero Section */}
       <section className="flex-1 flex items-center justify-center px-8">
         <p className="text-xs uppercase tracking-wide text-center leading-relaxed max-w-sm mx-auto">
-          Software engineer by trade, obsessively curious by nature. I build
-          things, ship often, and chase ideas from the back of the napkin
-          to the real world.
+        Howdy, I'm komran. Redoing my site as a playground. I'm using this space for you to get to know me, see what I'm tinkering with, and get in touch!
         </p>
       </section>
 

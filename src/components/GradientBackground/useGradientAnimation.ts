@@ -134,29 +134,30 @@ export function useGradientAnimation() {
         blob.radius = Math.max(width, height) * (0.3 + index * 0.05) * breathingScale;
 
         // Tablecloth effect: push blobs outward from cursor (creates "lift" effect)
+        // TEMPORARILY DISABLED
         const baseOpacity = [0.4, 0.45, 0.35][index];
         blob.opacity = baseOpacity; // Reset to base
 
-        if (mouseX !== null && mouseY !== null && !reducedMotion) {
-          const dx = targetX - mouseX; // Reversed: blob position minus mouse = outward direction
-          const dy = targetY - mouseY;
-          const distance = Math.sqrt(dx * dx + dy * dy);
-          const effectRadius = Math.max(width, height) * 0.4;
+        // if (mouseX !== null && mouseY !== null && !reducedMotion) {
+        //   const dx = targetX - mouseX; // Reversed: blob position minus mouse = outward direction
+        //   const dy = targetY - mouseY;
+        //   const distance = Math.sqrt(dx * dx + dy * dy);
+        //   const effectRadius = Math.max(width, height) * 0.4;
 
-          if (distance < effectRadius && distance > 0) {
-            // Smooth quadratic falloff from center
-            const strength = Math.pow(1 - distance / effectRadius, 2);
-            const displacement = 80 * strength; // Push outward
-            const normalX = dx / distance;
-            const normalY = dy / distance;
+        //   if (distance < effectRadius && distance > 0) {
+        //     // Smooth quadratic falloff from center
+        //     const strength = Math.pow(1 - distance / effectRadius, 2);
+        //     const displacement = 80 * strength; // Push outward
+        //     const normalX = dx / distance;
+        //     const normalY = dy / distance;
 
-            targetX += normalX * displacement;
-            targetY += normalY * displacement;
+        //     targetX += normalX * displacement;
+        //     targetY += normalY * displacement;
 
-            // Increase opacity near cursor for "lift" visual
-            blob.opacity = baseOpacity + strength * 0.15;
-          }
-        }
+        //     // Increase opacity near cursor for "lift" visual
+        //     blob.opacity = baseOpacity + strength * 0.15;
+        //   }
+        // }
 
         // Smoother interpolation to target (reduced from 0.03 to 0.015)
         const smoothing = reducedMotion ? 0.01 : 0.015;
