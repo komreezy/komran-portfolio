@@ -37,7 +37,7 @@ export default function Header() {
       {/* Status Badge */}
       <div className="flex items-center gap-2">
         <span className="w-2 h-2 bg-[var(--accent)]" />
-        <span className="text-xs uppercase tracking-wide">available</span>
+        <span className="text-xs uppercase tracking-wide">atlanta, ga</span>
       </div>
     </header>
   );
