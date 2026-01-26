@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Header from "@/components/Header";
 import Marquee from "@/components/Marquee";
 
@@ -12,53 +13,67 @@ const socialLinks = [
 const companies = [
   {
     id: 1,
-    name: "Company A",
-    role: "Senior Software Engineer",
-    period: "2022 — Present",
-    description: "Building scalable web applications and leading technical initiatives.",
-    tags: ["React", "TypeScript", "Node.js"],
+    name: "Dick's Sporting Goods",
+    role: "Senior iOS Engineer",
+    period: "Nov 2024 — Present",
+    description: "Leading iOS feature planning, build management, and mentoring engineers across two teams.",
+    tags: ["Swift", "CI/CD", "Team Lead"],
   },
   {
     id: 2,
-    name: "Company B",
-    role: "Software Engineer",
-    period: "2020 — 2022",
-    description: "Developed full-stack features and improved system performance.",
-    tags: ["Python", "AWS", "PostgreSQL"],
+    name: "Cloaked",
+    role: "Senior iOS Engineer",
+    period: "Mar 2023 — Nov 2024",
+    description: "Built privacy-focused iOS app with SwiftUI, encryption, MFA, and deep linking.",
+    tags: ["SwiftUI", "Combine", "Security"],
   },
   {
     id: 3,
-    name: "Company C",
-    role: "Junior Developer",
-    period: "2018 — 2020",
-    description: "Started my journey building web applications and learning best practices.",
-    tags: ["JavaScript", "React", "CSS"],
+    name: "Future",
+    role: "Senior iOS Engineer",
+    period: "Apr 2022 — Jan 2023",
+    description: "Developed fitness app connecting users with trainers using UIKit and ML-powered features.",
+    tags: ["UIKit", "Combine", "ML"],
+  },
+  {
+    id: 4,
+    name: "Peloton",
+    role: "iOS Engineer",
+    period: "Jan 2020 — Jan 2022",
+    description: "Built Peloton Apple TV app from scratch with SwiftUI and revamped sharing functionality.",
+    tags: ["SwiftUI", "tvOS", "Streaming"],
+  },
+  {
+    id: 5,
+    name: "WeWork",
+    role: "iOS Engineer",
+    period: "Aug 2017 — Dec 2019",
+    description: "Developed FieldLens construction planning tool with 360° camera integration.",
+    tags: ["UIKit", "MVVM", "GraphQL"],
   },
 ];
 
 const projects = [
   {
     id: 1,
-    name: "Project Alpha",
+    name: "Julienne",
     period: "2023",
-    description: "A productivity tool that helps teams collaborate more effectively.",
-    tags: ["Next.js", "Supabase"],
-    link: "https://example.com",
+    description: "AI-powered kitchen assistant that converts social media videos into recipes with a cooking companion experience.",
+    tags: ["AI", "iOS", "SwiftUI"],
   },
   {
     id: 2,
-    name: "Project Beta",
-    period: "2022",
-    description: "An open-source library for building accessible UI components.",
-    tags: ["TypeScript", "React"],
-    link: "https://github.com",
+    name: "Savvy",
+    period: "2019",
+    description: "App that monitors building carbon emissions using hardware sensors.",
+    tags: ["SwiftUI", "Combine", "GraphQL"],
   },
   {
     id: 3,
-    name: "Project Gamma",
-    period: "2021",
-    description: "A mobile app for tracking personal goals and habits.",
-    tags: ["React Native", "Firebase"],
+    name: "Featured",
+    period: "2018",
+    description: "Instagram story layout editor with templates, image search, visual effects, and text tools.",
+    tags: ["iOS", "UIKit", "Media"],
   },
 ];
 
@@ -138,9 +153,15 @@ export default function AboutPage() {
       <section className="max-w-3xl mx-auto px-8 pt-32 pb-16">
         {/* Photo + Bio Section */}
         <div className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-8 md:gap-12 mb-20">
-          {/* Placeholder photo */}
-          <div className="relative aspect-square w-[200px] bg-[var(--foreground)] flex items-center justify-center">
-            <span className="text-2xl text-[var(--background)] font-light">KG</span>
+          {/* Profile photo */}
+          <div className="relative aspect-square w-[200px] overflow-hidden">
+            <Image
+              src="/profile.png"
+              alt="Komran Ghahremani"
+              fill
+              className="object-cover"
+              priority
+            />
           </div>
 
           {/* Bio text */}
@@ -158,16 +179,16 @@ export default function AboutPage() {
           </div>
         </div>
 
-        {/* Experience Section */}
-        <div className="mb-20">
-          <h2 className="text-xs uppercase tracking-wide mb-8 text-center">Experience</h2>
-          <Timeline items={companies} showRole />
-        </div>
-
         {/* Projects Section */}
         <div className="mb-20">
           <h2 className="text-xs uppercase tracking-wide mb-8 text-center">Projects</h2>
           <Timeline items={projects} />
+        </div>
+
+        {/* Experience Section */}
+        <div className="mb-20">
+          <h2 className="text-xs uppercase tracking-wide mb-8 text-center">Experience</h2>
+          <Timeline items={companies} showRole />
         </div>
 
         {/* Connect Section (reused from Contact) */}

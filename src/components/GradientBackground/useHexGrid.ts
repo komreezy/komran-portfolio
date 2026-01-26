@@ -21,8 +21,8 @@ interface HexGridState {
 const HEX_SIZE = 70;
 const EFFECT_RADIUS = 250;
 const MAX_DISPLACEMENT = 40;
-const LINE_BASE_OPACITY = 0.15;
-const LINE_LIFT_OPACITY = 0.4;
+const LINE_BASE_OPACITY = 0.20;
+const LINE_LIFT_OPACITY = 0.45;
 const LERP_SPEED = 0.08;
 
 export function useHexGrid() {
