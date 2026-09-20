@@ -1389,7 +1389,8 @@
 }
 
 .mm-update-controls { display: inline-flex; align-items: center; gap: 3px; min-width: 0; }
-.mm-refresh { display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; flex-shrink: 0; padding: 0; border: 0; border-radius: 50%; background: transparent; color: var(--muted); cursor: pointer; }
+.mm-refresh { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; flex-shrink: 0; padding: 0; border: 0; border-radius: 50%; background: transparent; color: var(--muted); cursor: pointer; }
+.mm-refresh svg { width: 14px; height: 14px; }
 .mm-refresh:hover:not(:disabled) { background: #eae5d9; color: var(--ink); }
 .mm-refresh:disabled { cursor: wait; }
 .mm-refresh[aria-busy="true"] svg { animation: mm-refresh-spin 1s linear infinite; }

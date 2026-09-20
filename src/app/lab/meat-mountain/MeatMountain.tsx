@@ -976,7 +976,7 @@ export default function MeatMountain() {
                         ) : i === teams.length - 1 ? (
                           <Icon name="danger" size={13} />
                         ) : null}
-                        {i + 1}
+                        {i > 0 && i + 1}
                       </span>
                       <span className="mm-row-team">
                         <Avatar team={t} />
