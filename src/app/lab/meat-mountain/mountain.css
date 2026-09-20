@@ -497,12 +497,14 @@
   left: -1px;
   color: #9b7227;
 }
-.mm-row.first .mm-rank {
+.mm-row.first .mm-rank,
+.mm-row.last .mm-rank {
   display: flex;
   align-items: center;
   height: 100%;
 }
-.mm-row.first .mm-rank svg {
+.mm-row.first .mm-rank svg,
+.mm-row.last .mm-rank svg {
   position: static;
   display: block;
 }
