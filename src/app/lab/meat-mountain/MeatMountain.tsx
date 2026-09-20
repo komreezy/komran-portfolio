@@ -581,6 +581,7 @@ export default function MeatMountain() {
     requestId = useRef(0);
   const refresh = useCallback(async () => {
     const id = ++requestId.current;
+    setLoading(true);
     try {
       const response = await fetch(
         `/api/meat-mountain${week ? `?week=${week}` : ""}`,
@@ -723,7 +724,8 @@ export default function MeatMountain() {
                     ? "LIVE"
                     : "CONNECTING"}
           </span>
-          <span className={`mm-updated ${age > 180 ? "stale" : ""}`}>
+          <span className="mm-update-controls">
+          <span className={`mm-updated ${age > 180 || error ? "stale" : ""}`} title={error || undefined}>
             {frame
               ? new Date(frame.at).toLocaleString("en-US", {
                   weekday: "short",
@@ -733,6 +735,20 @@ export default function MeatMountain() {
               : race
                 ? `Updated ${age < 60 ? `${age}s` : `${Math.floor(age / 60)}m`} ago`
                 : "Fetching Sleeper data"}
+          </span>
+          <button
+            className="mm-refresh"
+            onClick={refresh}
+            disabled={loading}
+            aria-label={loading ? "Refreshing standings" : "Refresh standings"}
+            title={loading ? "Refreshing standings…" : "Refresh standings"}
+            aria-busy={loading}
+          >
+            <Icon name="restart" size={16} />
+          </button>
+          <span className="mm-sr-only" role="status">
+            {loading ? "Refreshing standings" : error ? `${error} Use Refresh standings to try again.` : "Standings updated"}
+          </span>
           </span>
         </div>
         <div className="mm-mode-switch" role="group" aria-label="Race view">
@@ -775,20 +791,6 @@ export default function MeatMountain() {
             part of the league joke; this is an independent fan project.
           </p>
         </section>
-      )}
-      {(error || age > 180) && (
-        <div className="mm-error" role="alert">
-          {error || "These standings are getting stale."}{" "}
-          {race ? "Showing the last successful update. " : ""}
-          <button
-            onClick={() => {
-              setLoading(true);
-              refresh();
-            }}
-          >
-            Try again
-          </button>
-        </div>
       )}
       <div className="mm-workspace">
         <section
@@ -884,7 +886,7 @@ export default function MeatMountain() {
                 <small>
                   {loading
                     ? "Loading scores, projections, and season history."
-                    : "Use Try again above to reconnect to Sleeper."}
+                    : "Use the refresh button above to reconnect to Sleeper."}
                 </small>
               </div>
             </div>
