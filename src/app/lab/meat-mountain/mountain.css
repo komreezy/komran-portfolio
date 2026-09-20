@@ -1393,3 +1393,12 @@
     height: calc(87dvh - 26px);
   }
 }
+
+/* Let status messages take space without pushing controls beneath the sheet. */
+@media (max-width: 760px) {
+  .mm-app { display:flex; flex-direction:column; height:100dvh; min-height:650px; }
+  .mm-topbar,.mm-toolbar,.mm-error { flex-shrink:0; }
+  .mm-workspace { flex:1; min-height:0; margin-bottom:calc(105px + env(safe-area-inset-bottom)); }
+  .mm-scene { height:100%; min-height:0; }
+  .mm-info { max-height:35dvh; overflow:auto; flex-shrink:0; }
+}
