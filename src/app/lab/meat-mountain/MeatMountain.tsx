@@ -84,7 +84,7 @@ function Mountain({
   choose: (id: number) => void;
 }) {
   const mountainRef = useRef<HTMLDivElement>(null);
-  const [size, setSize] = useState({ width: 900, height: 780 });
+  const [size, setSize] = useState({ width: 900, height: 780, marker: 94, avatar: 36 });
   useEffect(() => {
     const element = mountainRef.current;
     if (!element) return;
@@ -92,6 +92,8 @@ function Mountain({
       setSize({
         width: entry.contentRect.width,
         height: entry.contentRect.height,
+        marker: Math.max(65, ...Array.from(element.querySelectorAll('.mm-hiker'), (node) => node.getBoundingClientRect().width)),
+        avatar: element.querySelector('.mm-avatar')?.getBoundingClientRect().width || 36,
       }),
     );
     observer.observe(element);
@@ -102,18 +104,32 @@ function Mountain({
     .sort((a, b) => b.projected - a.projected)
     .map((t) => {
       const altitude = Math.max(0, Math.min(180, t.projected)) / 180;
-      let x = 18 + 53 * altitude;
       const y = 91 - 83 * altitude;
-      // Lateral lanes resolve crowding without changing point altitude.
-      const candidates = Array.from({ length: 83 }, (_, i) => 8 + i)
-        .filter(
-          (cx) =>
-            (cx * size.width) / 100 < size.width - (size.width < 600 ? 35 : 50),
-        )
-        .sort((a, b) => Math.abs(a - x) - Math.abs(b - x));
-      const width = ((size.width < 600 ? 65 : 94) / size.width) * 100,
-        height = ((size.width < 600 ? 35 : 43) / size.height) * 100;
-      x =
+      // Trace the illustrated mountain face in image percentages. The image
+      // stretches with this container, so these bounds also track phone layouts.
+      const contours = [
+        [8, 71, 73], [15, 65, 78], [22, 61, 81],
+        [28, 57, 85], [33, 47, 87], [40, 43, 90],
+        [50, 39, 94], [60, 30, 96], [75, 20, 96], [91, 8, 95],
+      ];
+      const next = contours.findIndex(([height]) => height >= y);
+      const lower = contours[Math.max(0, next - 1)];
+      const upper = contours[Math.max(0, next)];
+      const fraction = upper[0] === lower[0] ? 0 : (y - lower[0]) / (upper[0] - lower[0]);
+      const left = lower[1] + (upper[1] - lower[1]) * fraction;
+      const right = lower[2] + (upper[2] - lower[2]) * fraction;
+      // CSS centers the entire avatar + score button. Account for its offset
+      // so the avatar itself stays over rock, rather than just the label.
+      const offset = ((size.marker - size.avatar) / 2 - 3) / size.width * 100;
+      const padding = Math.min((size.avatar / 2 + 3) / size.width * 100, (right - left) / 2);
+      const min = left + padding + offset;
+      const max = Math.max(min, Math.min(right - padding + offset, 100 - size.marker / 2 / size.width * 100 - 1));
+      const preferred = Math.max(min, Math.min(max, 18 + 53 * altitude + offset));
+      const candidates = Array.from({ length: 101 }, (_, i) => min + (max - min) * i / 100)
+        .sort((a, b) => Math.abs(a - preferred) - Math.abs(b - preferred));
+      const width = ((size.marker + 5) / size.width) * 100,
+        height = ((size.avatar + 9) / size.height) * 100;
+      const x =
         candidates.find(
           (cx) =>
             !placed.some(
@@ -121,12 +137,11 @@ function Mountain({
             ),
         ) ??
         candidates.reduce((best, cx) => {
-          const count = (value: number) =>
-            placed.filter(
-              (p) =>
-                Math.abs(p.y - y) < height && Math.abs(p.x - value) < width,
-            ).length;
-          return count(cx) < count(best) ? cx : best;
+          // When a dense pack cannot fit, minimize overlap inside the mountain
+          // instead of sending a team into the sky or falsifying its altitude.
+          const overlap = (value: number) => placed.reduce((total, p) => total +
+            Math.max(0, height - Math.abs(p.y - y)) * Math.max(0, width - Math.abs(p.x - value)), 0);
+          return overlap(cx) < overlap(best) ? cx : best;
         }, candidates[0]);
       placed.push({ x, y });
       return { id: t.id, x, y };
