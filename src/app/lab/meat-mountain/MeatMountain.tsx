@@ -4,6 +4,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import type { Climber, Race, Snapshot } from "@/lib/meat-mountain/types";
 import "./mountain.css";
+// Keep replay available to restore later while history collection continues.
+const REPLAY_ENABLED = false;
 const n = (x: number) => x.toFixed(1),
   pct = (x: number) =>
     x === 0 ? "0%" : x < 0.01 ? "<1%" : `${Math.round(x * 100)}%`;
@@ -617,7 +619,7 @@ export default function MeatMountain() {
     return () => clearInterval(timer);
   }, []);
   useEffect(() => {
-    if (!playing) return;
+    if (!REPLAY_ENABLED || !playing) return;
     let last = performance.now();
     const timer = setInterval(() => {
       const current = performance.now(),
@@ -633,7 +635,7 @@ export default function MeatMountain() {
   }, [playing]);
   const frames = race?.history || [];
   const frame: Snapshot | undefined =
-    replay === null
+    !REPLAY_ENABLED || replay === null
       ? undefined
       : frames[
           Math.min(
@@ -823,7 +825,7 @@ export default function MeatMountain() {
                   .
                 </p>
               )}
-              <div className="mm-replay-controls">
+              {REPLAY_ENABLED && <div className="mm-replay-controls">
                 {frames.length >= 2 ? (
                   <>
                     <button
@@ -869,7 +871,7 @@ export default function MeatMountain() {
                       : "Live standings · replay storage connecting"}
                   </span>
                 )}
-              </div>
+              </div>}
             </>
           ) : (
             <div className="mm-loading">
