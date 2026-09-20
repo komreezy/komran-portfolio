@@ -497,6 +497,15 @@
   left: -1px;
   color: #9b7227;
 }
+.mm-row.first .mm-rank {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+.mm-row.first .mm-rank svg {
+  position: static;
+  display: block;
+}
 .mm-row.last .mm-rank svg {
   color: #a24536;
 }
@@ -1388,9 +1397,10 @@
   .mm-info { max-height:35dvh; overflow:auto; flex-shrink:0; }
 }
 
-.mm-update-controls { display: inline-flex; align-items: center; gap: 3px; min-width: 0; }
+.mm-update-controls { display: inline-flex; align-items: center; gap: 3px; min-width: 0; line-height: 1; }
+.mm-updated { display: inline-flex; align-items: center; }
 .mm-refresh { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; flex-shrink: 0; padding: 0; border: 0; border-radius: 50%; background: transparent; color: var(--muted); cursor: pointer; }
-.mm-refresh svg { width: 14px; height: 14px; }
+.mm-refresh svg { display: block; width: 14px; height: 14px; }
 .mm-refresh:hover:not(:disabled) { background: #eae5d9; color: var(--ink); }
 .mm-refresh:disabled { cursor: wait; }
 .mm-refresh[aria-busy="true"] svg { animation: mm-refresh-spin 1s linear infinite; }
