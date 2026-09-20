@@ -1,0 +1,309 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-20T20:39:15.199551+00:00",
+  "title": "Design System: Komran Portfolio",
+  "extensions": {
+    "colorMeta": {
+      "portfolio-paper": {
+        "role": "neutral",
+        "displayName": "Portfolio Paper",
+        "tonalRamp": [
+          "oklch(15% 0.00000 89.88)",
+          "oklch(26% 0.00000 89.88)",
+          "oklch(38% 0.00000 89.88)",
+          "oklch(49% 0.00000 89.88)",
+          "oklch(61% 0.00000 89.88)",
+          "oklch(72% 0.00000 89.88)",
+          "oklch(84% 0.00000 89.88)",
+          "oklch(95% 0.00000 89.88)"
+        ]
+      },
+      "portfolio-ink": {
+        "role": "primary",
+        "displayName": "Portfolio Ink",
+        "tonalRamp": [
+          "oklch(15% 0.00000 89.88)",
+          "oklch(26% 0.00000 89.88)",
+          "oklch(38% 0.00000 89.88)",
+          "oklch(49% 0.00000 89.88)",
+          "oklch(61% 0.00000 89.88)",
+          "oklch(72% 0.00000 89.88)",
+          "oklch(84% 0.00000 89.88)",
+          "oklch(95% 0.00000 89.88)"
+        ]
+      },
+      "portfolio-accent": {
+        "role": "secondary",
+        "displayName": "Portfolio Accent",
+        "tonalRamp": [
+          "oklch(15% 0.16299 76.14)",
+          "oklch(26% 0.16299 76.14)",
+          "oklch(38% 0.16299 76.14)",
+          "oklch(49% 0.16299 76.14)",
+          "oklch(61% 0.16299 76.14)",
+          "oklch(72% 0.16299 76.14)",
+          "oklch(84% 0.16299 76.14)",
+          "oklch(95% 0.16299 76.14)"
+        ]
+      },
+      "mountain-paper": {
+        "role": "neutral",
+        "displayName": "Mountain Paper",
+        "tonalRamp": [
+          "oklch(15% 0.01107 89.72)",
+          "oklch(26% 0.01107 89.72)",
+          "oklch(38% 0.01107 89.72)",
+          "oklch(49% 0.01107 89.72)",
+          "oklch(61% 0.01107 89.72)",
+          "oklch(72% 0.01107 89.72)",
+          "oklch(84% 0.01107 89.72)",
+          "oklch(95% 0.01107 89.72)"
+        ]
+      },
+      "mountain-ink": {
+        "role": "primary",
+        "displayName": "Mountain Ink",
+        "tonalRamp": [
+          "oklch(15% 0.00794 223.70)",
+          "oklch(26% 0.00794 223.70)",
+          "oklch(38% 0.00794 223.70)",
+          "oklch(49% 0.00794 223.70)",
+          "oklch(61% 0.00794 223.70)",
+          "oklch(72% 0.00794 223.70)",
+          "oklch(84% 0.00794 223.70)",
+          "oklch(95% 0.00794 223.70)"
+        ]
+      },
+      "mountain-muted": {
+        "role": "neutral",
+        "displayName": "Mountain Muted",
+        "tonalRamp": [
+          "oklch(15% 0.01251 95.30)",
+          "oklch(26% 0.01251 95.30)",
+          "oklch(38% 0.01251 95.30)",
+          "oklch(49% 0.01251 95.30)",
+          "oklch(61% 0.01251 95.30)",
+          "oklch(72% 0.01251 95.30)",
+          "oklch(84% 0.01251 95.30)",
+          "oklch(95% 0.01251 95.30)"
+        ]
+      },
+      "mountain-line": {
+        "role": "neutral",
+        "displayName": "Mountain Line",
+        "tonalRamp": [
+          "oklch(15% 0.01592 86.43)",
+          "oklch(26% 0.01592 86.43)",
+          "oklch(38% 0.01592 86.43)",
+          "oklch(49% 0.01592 86.43)",
+          "oklch(61% 0.01592 86.43)",
+          "oklch(72% 0.01592 86.43)",
+          "oklch(84% 0.01592 86.43)",
+          "oklch(95% 0.01592 86.43)"
+        ]
+      },
+      "mountain-gold": {
+        "role": "secondary",
+        "displayName": "Mountain Gold",
+        "tonalRamp": [
+          "oklch(15% 0.11028 79.01)",
+          "oklch(26% 0.11028 79.01)",
+          "oklch(38% 0.11028 79.01)",
+          "oklch(49% 0.11028 79.01)",
+          "oklch(61% 0.11028 79.01)",
+          "oklch(72% 0.11028 79.01)",
+          "oklch(84% 0.11028 79.01)",
+          "oklch(95% 0.11028 79.01)"
+        ]
+      },
+      "mountain-focus": {
+        "role": "secondary",
+        "displayName": "Mountain Focus",
+        "tonalRamp": [
+          "oklch(15% 0.11768 70.70)",
+          "oklch(26% 0.11768 70.70)",
+          "oklch(38% 0.11768 70.70)",
+          "oklch(49% 0.11768 70.70)",
+          "oklch(61% 0.11768 70.70)",
+          "oklch(72% 0.11768 70.70)",
+          "oklch(84% 0.11768 70.70)",
+          "oklch(95% 0.11768 70.70)"
+        ]
+      },
+      "mountain-danger": {
+        "role": "secondary",
+        "displayName": "Mountain Danger",
+        "tonalRamp": [
+          "oklch(15% 0.14872 29.99)",
+          "oklch(26% 0.14872 29.99)",
+          "oklch(38% 0.14872 29.99)",
+          "oklch(49% 0.14872 29.99)",
+          "oklch(61% 0.14872 29.99)",
+          "oklch(72% 0.14872 29.99)",
+          "oklch(84% 0.14872 29.99)",
+          "oklch(95% 0.14872 29.99)"
+        ]
+      },
+      "mountain-live": {
+        "role": "secondary",
+        "displayName": "Mountain Live",
+        "tonalRamp": [
+          "oklch(15% 0.06099 81.55)",
+          "oklch(26% 0.06099 81.55)",
+          "oklch(38% 0.06099 81.55)",
+          "oklch(49% 0.06099 81.55)",
+          "oklch(61% 0.06099 81.55)",
+          "oklch(72% 0.06099 81.55)",
+          "oklch(84% 0.06099 81.55)",
+          "oklch(95% 0.06099 81.55)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "mountain-display": {
+        "displayName": "Expedition display",
+        "purpose": "Scoped title; MountainDisplay aliases bundled Barlow Condensed Bold."
+      },
+      "portfolio-label": {
+        "displayName": "Portfolio mono",
+        "purpose": "Shared navigation and compact labels."
+      }
+    },
+    "shadows": [
+      {
+        "name": "hiker-avatar",
+        "value": "0 2px 5px #282d2f30",
+        "purpose": "Separate avatar from engraving."
+      },
+      {
+        "name": "hiker-score",
+        "value": "0 2px 5px #282d2f12",
+        "purpose": "Lift score above image texture."
+      },
+      {
+        "name": "mobile-sheet",
+        "value": "0 -5px 25px #342e2010",
+        "purpose": "Separate fixed sheet from scene."
+      }
+    ],
+    "motion": [
+      {
+        "name": "hiker-position",
+        "value": "top 1.2s cubic-bezier(0.16, 1, 0.3, 1), left 1.2s cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Animate true altitude updates."
+      },
+      {
+        "name": "sheet",
+        "value": "transform 0.35s cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Reveal three sheet positions."
+      },
+      {
+        "name": "button",
+        "value": "background 0.2s, color 0.2s",
+        "purpose": "Control state feedback."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "portfolio-two-column",
+        "value": "640px"
+      },
+      {
+        "name": "mountain-mobile-max",
+        "value": "760px"
+      },
+      {
+        "name": "mountain-compact-desktop-max",
+        "value": "1150px"
+      },
+      {
+        "name": "mountain-wide-min",
+        "value": "1600px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Portfolio navigation",
+      "kind": "nav",
+      "refersTo": "portfolio-navigation",
+      "description": "Incumbent compact portfolio navigation.",
+      "html": "<nav class=\"ds-nav\"><a href=\"/lab\">Lab</a><a href=\"/about\">About</a></nav>",
+      "css": ".ds-nav{display:flex;gap:32px;font-family:var(--font-geist-mono, \"Geist Mono\"),monospace;}.ds-nav a{padding:4px 8px;color:var(--foreground,#0C0C0C);background:var(--background,#F0F0F0);text-decoration:none;font-size:12px;text-transform:uppercase;letter-spacing:.025em;transition:all .3s cubic-bezier(.61,1,.88,1)}.ds-nav a:hover{background:var(--foreground,#0C0C0C);color:var(--background,#F0F0F0)}.ds-nav a:focus-visible{outline:2px solid currentColor;outline-offset:4px}"
+    },
+    {
+      "name": "Portfolio project card",
+      "kind": "card",
+      "refersTo": "portfolio-card",
+      "description": "Text-fallback rendering of the existing square-cornered project tile.",
+      "html": "<a class=\"ds-card\" href=\"/lab/meat-mountain\"><span class=\"ds-placeholder\">Weekly Meat Mountain</span><span class=\"ds-overlay\">Weekly Meat Mountain<small>Live fantasy football expedition</small><span class=\"ds-tag\">Experiment</span></span></a>",
+      "css": ".ds-card{display:block;position:relative;aspect-ratio:4/3;width:280px;background:var(--foreground,#0C0C0C);color:var(--background,#F0F0F0);overflow:hidden;font-family:var(--font-geist-mono, \"Geist Mono\"),monospace;}.ds-placeholder{position:absolute;inset:0;display:grid;place-items:center;font-size:12px;text-transform:uppercase;opacity:.4}.ds-overlay{position:absolute;inset:0;padding:24px;display:flex;flex-direction:column;justify-content:flex-end;opacity:0;font-size:14px;text-transform:uppercase;background:#0c0c0c99;transition:opacity .3s}.ds-overlay small{font-size:12px;margin:8px 0 16px;text-transform:none}.ds-tag{font-size:10px;border:1px solid #f0f0f04d;padding:2px 8px;align-self:flex-start}.ds-card:hover .ds-overlay,.ds-card:focus-visible .ds-overlay{opacity:1}.ds-card:focus-visible{outline:2px solid currentColor;outline-offset:4px}"
+    },
+    {
+      "name": "Mountain view switch",
+      "kind": "button",
+      "refersTo": "mountain-mode-active",
+      "description": "Active and inactive segments of the route view control.",
+      "html": "<div class=\"ds-switch\" role=\"group\" aria-label=\"Race view\"><button aria-pressed=\"true\">Meat Mountain</button><button aria-pressed=\"false\">Timeline</button></div>",
+      "css": ".ds-switch{display:flex;padding:3px;border:1px solid #bdb9b0;border-radius:30px;height:39px;width:340px;background:#f8f5ed;font-family:var(--font-geist-mono, \"Geist Mono\"),monospace;}.ds-switch button{width:50%;border:0;background:transparent;color:#282d2f;border-radius:25px;font:inherit;font-size:10px;text-transform:uppercase;letter-spacing:1px;cursor:pointer;transition:background .2s,color .2s}.ds-switch button[aria-pressed=\"true\"]{background:#282d2f;color:#f8f5ed}.ds-switch button:hover:not([aria-pressed=\"true\"]){background:#e9e4d9}.ds-switch button:focus-visible{outline:2px solid #a46b14;outline-offset:4px;}"
+    },
+    {
+      "name": "Week selector",
+      "kind": "input",
+      "refersTo": "mountain-week",
+      "description": "Native borderless week selection.",
+      "html": "<label class=\"ds-week\">Week <select aria-label=\"Week\"><option>Week 3</option><option>Week 2</option></select></label>",
+      "css": ".ds-week{color:#282d2f;background:#f8f5ed;font-family:var(--font-geist-mono, \"Geist Mono\"),monospace;font-size:12px}.ds-week select{font:inherit;font-weight:600;text-transform:uppercase;border:0;background:none;padding:9px 0;max-width:180px;cursor:pointer;color:inherit}.ds-week select:hover{color:#a67a28}.ds-week select:focus-visible{outline:2px solid #a46b14;outline-offset:4px;}"
+    },
+    {
+      "name": "Live status",
+      "kind": "chip",
+      "refersTo": "mountain-status-live",
+      "description": "Live phase is expressed with text and a small pulse.",
+      "html": "<span class=\"ds-live\"><i></i>Live</span>",
+      "css": ".ds-live{display:inline-flex;gap:6px;align-items:center;padding:5px 9px;background:#f2dab0;color:#282d2f;font-size:10px;letter-spacing:1px;text-transform:uppercase;font-family:var(--font-geist-mono, \"Geist Mono\"),monospace;}.ds-live i{width:5px;height:5px;border-radius:50%;background:#916517;animation:ds-pulse 2s infinite}@keyframes ds-pulse{50%{opacity:.3}}@media(prefers-reduced-motion:reduce){.ds-live i{animation:none}}"
+    },
+    {
+      "name": "Standings row",
+      "kind": "button",
+      "refersTo": "mountain-row",
+      "description": "Compact data row; initials demonstrate the avatar fallback.",
+      "html": "<button class=\"ds-row\"><span>1</span><span class=\"ds-team\"><i>TM</i><span>Team name<small>2 live \u00b7 4 left</small></span></span><span>90.0</span><strong>128.2</strong><span>34%</span><span>1%</span></button>",
+      "css": ".ds-row{display:grid;grid-template-columns:19px minmax(0,1fr) 43px 45px 36px 36px;column-gap:7px;align-items:center;width:440px;min-height:48px;padding:6px 7px;text-align:right;border:0;border-top:1px solid #ded9cd;background:#f8f5ed;color:#282d2f;font-size:10px;cursor:pointer;font-family:var(--font-geist-mono, \"Geist Mono\"),monospace;}.ds-row:hover{background:#e9e4d6}.ds-row:focus-visible{outline:2px solid #a46b14;outline-offset:4px;}.ds-team{display:flex;gap:9px;text-align:left;align-items:center}.ds-team i{display:grid;place-items:center;width:27px;height:27px;border-radius:50%;background:#4e6556;color:white;font-style:normal}.ds-team small{display:block;font-size:8px;color:#777168;margin-top:3px}"
+    }
+  ],
+  "narrative": {
+    "northStar": "A playground with an expedition inside the Lab",
+    "overview": "The portfolio is a compact monospace playground: pale gray ground, near-black type, uppercase navigation, sharp rectangular project tiles, and a warm accent. Existing portfolio pages retain that identity and their shared header and marquee.\n\nWeekly Meat Mountain is a scoped immersive Lab extension at `/lab/meat-mountain`. Its approved ivory engraved expedition scene, charcoal contours, restrained amber, and condensed display typography belong to this experience. Geist Mono labels and figures provide continuity with the portfolio. The extension uses its own Back to Lab navigation and native pointer behavior.",
+    "keyCharacteristics": [
+      "Compact monospace navigation and figures connect the portfolio and its experiments.",
+      "Sharp, flat portfolio surfaces give way to an illustrated ivory mountain within this route.",
+      "The mountain carries the scene; restrained controls and aligned data support it."
+    ],
+    "rules": [
+      {
+        "name": "The Scoped Expedition Rule",
+        "body": "Apply the warm map palette and display face inside Weekly Meat Mountain; preserve the portfolio\u2019s incumbent visual identity elsewhere.",
+        "section": "colors"
+      },
+      {
+        "name": "The Honest Altitude Rule",
+        "body": "Vertical position encodes projected points on the fixed 0\u2013180 scale. Resolve crowding horizontally, and keep totals above the summit cap visible in standings.",
+        "section": "layout"
+      }
+    ],
+    "dos": [
+      "Do retain the established portfolio palette and typography on ordinary portfolio pages.",
+      "Do scope the ivory expedition palette, condensed title, and sheet to Weekly Meat Mountain.",
+      "Do use the approved illustration and real Sleeper avatars, with initials when avatars fail.",
+      "Do keep projected-point altitude faithful and distinguish actual points from estimates.",
+      "Do retain visible keyboard focus, text status, and reduced-motion behavior."
+    ],
+    "donts": [
+      "Don't turn the expedition art direction into a site-wide redesign.",
+      "Don't move hikers vertically to resolve collisions; lateral lanes preserve score geometry.",
+      "Don't add ghost hikers or place Arby\u2019s signage outside the illustration.",
+      "Don't fabricate historical motion or imply that simulation probabilities are guarantees."
+    ]
+  }
+}

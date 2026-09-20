@@ -10,6 +10,16 @@ export interface LabProject {
 
 export const labProjects: LabProject[] = [
   {
+    id: "meat-mountain",
+    title: "Weekly Meat Mountain",
+    description:
+      "Twelve teams. One summit. A live fantasy football expedition.",
+    thumbnail: "/lab/meat-mountain/mountain.png",
+    href: "/lab/meat-mountain",
+    type: "internal",
+    tags: ["Live data", "Fantasy football"],
+  },
+  {
     id: "avatar",
     title: "3D Avatar Game",
     description:
