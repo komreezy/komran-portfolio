@@ -181,11 +181,6 @@ function Mountain({
           </button>
         );
       })}
-      <div className="mm-map-note">
-        Same madness.
-        <br />
-        <em>Different altitude.</em>
-      </div>
       <div className="mm-compass" aria-hidden="true">
         <span>N</span>
         <svg viewBox="0 0 60 60">
