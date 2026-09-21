@@ -220,6 +220,7 @@
   height: 100%;
   object-fit: fill;
   mix-blend-mode: multiply;
+  mask-image: linear-gradient(to bottom, #000 0%, #000 77%, transparent 100%);
   pointer-events: none;
 }
 .mm-altitudes {

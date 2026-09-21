@@ -456,6 +456,7 @@ function Details({
 }) {
   const highest = teams[0],
     lowest = teams.at(-1)!;
+  const highestActual = Math.max(...teams.map((climber) => climber.actual));
   const swings = [...team.players]
     .sort(
       (a, b) =>
@@ -498,8 +499,8 @@ function Details({
       </div>
       <dl className="mm-gaps">
         <div>
-          <dt>To the summit</dt>
-          <dd>{n(Math.max(0, 180 - team.projected))} pts</dd>
+          <dt>Behind actual leader</dt>
+          <dd>{n(Math.max(0, highestActual - team.actual))} pts</dd>
         </div>
         <div>
           <dt>Behind projected leader</dt>
