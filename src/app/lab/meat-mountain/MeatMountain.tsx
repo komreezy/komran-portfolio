@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import type { Climber, Race, Snapshot } from "@/lib/meat-mountain/types";
+import { clipPoints, projectedPath, scoreScale, timelineWindow, type TimelineRange } from "@/lib/meat-mountain/timeline";
 import "./mountain.css";
 // Keep replay available to restore later while history collection continues.
 const REPLAY_ENABLED = false;
@@ -60,14 +61,14 @@ function Icon({ name, size = 18 }: { name: string; size?: number }) {
   );
 }
 function Avatar({ team }: { team: Climber }) {
-  const [failed, setFailed] = useState(false);
+  const [failedUrl, setFailedUrl] = useState<string | null>(null);
   return (
     <span
       className="mm-avatar"
       style={{ borderColor: team.color, backgroundColor: team.color }}
     >
-      {team.avatar && !failed ? (
-        <img src={team.avatar} alt="" onError={() => setFailed(true)} />
+      {team.avatar && failedUrl !== team.avatar ? (
+        <img src={team.avatar} alt="" onError={() => setFailedUrl(team.avatar)} />
       ) : (
         <span>{team.name.slice(0, 2).toUpperCase()}</span>
       )}
@@ -185,7 +186,7 @@ function Mountain({
             }
             onClick={() => choose(t.id)}
             aria-label={`${t.name}, ${n(t.projected)} projected points, ${pct(t.high)} highest, ${pct(t.low)} lowest`}
-            title={`${t.name} · ${n(t.projected)} projected`}
+            title={`${t.name} · ${t.owner} · ${n(t.projected)} projected`}
           >
             {(index === 0 || index === teams.length - 1) && (
               <span className="mm-hiker-marker">
@@ -194,7 +195,7 @@ function Mountain({
             )}
             <Avatar team={t} />
             <span className="mm-hiker-score">{n(t.projected)}</span>
-            <span className="mm-hiker-name">{t.name}</span>
+            <span className="mm-hiker-name">{t.name}<small>{t.owner}</small></span>
           </button>
         );
       })}
@@ -236,52 +237,29 @@ function Timeline({
     time: number;
     value: number;
   } | null>(null);
-  const now = new Date(at).getTime();
-  const history = race.history.filter((s) => new Date(s.at).getTime() <= now);
-  const start = history.length
-    ? new Date(history[0].at).getTime()
-    : now - 3600000;
-  const finish =
-    race.phase === "final"
-      ? Math.max(now, start + 3600000)
-      : Math.max(now + 3600000, new Date(race.end || at).getTime());
-  const top =
-    Math.ceil(
-      Math.max(180, ...teams.map((t) => Math.max(t.actual, t.projected))) / 30,
-    ) * 30;
-  const min = Math.min(
-    0,
-    ...teams.map((t) => t.actual),
-    ...history.flatMap((s) => s.teams.map((t) => t.actual)),
-  );
+  const [range, setRange] = useState<TimelineRange>("day");
+  const [offset, setOffset] = useState(0);
+  const now = Date.parse(at);
+  const history = race.history.filter((s) => Date.parse(s.at) <= now);
+  const { start, finish } = timelineWindow(race, now, range, offset);
+  const fullFinish = Math.max(now + 3600000, Date.parse(race.end || at));
+  const traces = teams.map((team) => {
+    const recorded = history.flatMap((snapshot) => {
+      const score = snapshot.teams.find((t) => t.id === team.id);
+      return score ? [{ time: Date.parse(snapshot.at), value: score.actual }] : [];
+    });
+    recorded.push({ time: now, value: team.actual });
+    const actual = clipPoints(recorded, start, finish);
+    const projected = race.phase === "final" || finish < now ? [] :
+      clipPoints(projectedPath(team, now, finish, fullFinish), start, finish);
+    return { team, actual, projected };
+  });
+  const { min, top, step } = scoreScale(traces.flatMap((trace) =>
+    [...trace.actual, ...trace.projected].map((point) => point.value)), range);
   const X = (time: number) => 64 + ((time - start) / (finish - start)) * 862,
     Y = (p: number) => 520 - ((p - min) / (top - min)) * 446;
-  const future = (t: Climber) => {
-    const points = [{ time: now, value: t.actual }];
-    for (let i = 1; i <= 24; i++) {
-      const time = now + ((finish - now) * i) / 24;
-      let delta = 0;
-      for (const p of t.players) {
-        if (p.state === "finished" || p.state === "out") continue;
-        const kickoff = p.kickoff ? new Date(p.kickoff).getTime() : now;
-        const from = Math.max(now, kickoff),
-          end = Math.max(from + 60000, kickoff + 3.5 * 3600000);
-        delta +=
-          (p.projected - p.actual) *
-          Math.max(0, Math.min(1, (time - from) / (end - from)));
-      }
-      points.push({
-        time,
-        value:
-          i === 24
-            ? t.projected
-            : at !== race.updatedAt
-              ? t.actual + ((t.projected - t.actual) * i) / 24
-              : t.actual + delta,
-      });
-    }
-    return points;
-  };
+  const firstRecorded = history.length ? Date.parse(history[0].at) : now;
+  const nowVisible = now >= start && now <= finish;
   const path = (points: { time: number; value: number }[]) =>
     points
       .map(
@@ -295,12 +273,26 @@ function Timeline({
         <h2>The week, unfolding.</h2>
         <p>Every climb. Every collapse.</p>
       </div>
+      <div className="mm-chart-controls">
+        <div className="mm-chart-range" role="group" aria-label="Timeline time window">
+          {(["hour", "day", "week"] as const).map((value) => (
+            <button key={value} aria-pressed={range === value} onClick={() => {
+              setRange(value); setOffset(0); setHover(null);
+            }}>{value}</button>
+          ))}
+        </div>
+        {range !== "week" && <div className="mm-chart-navigation" role="group" aria-label="Browse recorded time">
+          <button aria-label="Earlier time window" disabled={start <= firstRecorded} onClick={() => { setOffset(offset - 1); setHover(null); }}><Icon name="back" size={14} /></button>
+          <button disabled={offset === 0} onClick={() => { setOffset(0); setHover(null); }}>Latest</button>
+          <button aria-label="Later time window" disabled={offset === 0} onClick={() => { setOffset(Math.min(0, offset + 1)); setHover(null); }}><Icon name="back" size={14} /></button>
+        </div>}
+      </div>
       <svg
         viewBox="0 0 1000 610"
         role="img"
         aria-label="Team scores over recorded time; lighter lines show estimated future scoring"
       >
-        {Array.from({ length: top / 30 + 1 }, (_, i) => i * 30).map((p) => (
+        {Array.from({ length: Math.round((top - min) / step) + 1 }, (_, i) => min + i * step).map((p) => (
           <g key={p}>
             <line
               x1="64"
@@ -320,13 +312,13 @@ function Timeline({
           return (
             <text key={f} x={X(time)} y="558" textAnchor="middle">
               {new Date(time).toLocaleString("en-US", {
-                weekday: "short",
+                ...(range === "hour" ? { minute: "2-digit" as const } : { weekday: "short" as const }),
                 hour: "numeric",
               })}
             </text>
           );
         })}
-        <line
+        {nowVisible && <><line
           x1={X(now)}
           x2={X(now)}
           y1="52"
@@ -336,16 +328,10 @@ function Timeline({
         />
         <text x={X(now)} y="35" textAnchor="middle">
           NOW
-        </text>
-        {teams.map((t, index) => {
+        </text></>}
+        {traces.map(({ team: t, actual, projected }, index) => {
           const strong =
             selected === t.id || index === 0 || index === teams.length - 1;
-          const actual = history.map((s) => ({
-            time: new Date(s.at).getTime(),
-            value: s.teams.find((x) => x.id === t.id)?.actual ?? t.actual,
-          }));
-          actual.push({ time: now, value: t.actual });
-          const projected = future(t);
           return (
             <g
               key={t.id}
@@ -378,19 +364,18 @@ function Timeline({
                 strokeWidth="16"
                 tabIndex={0}
                 role="button"
-                aria-label={`Highlight ${t.name}`}
+                aria-label={`Highlight ${t.name}, ${t.owner}`}
                 onClick={() => choose(t.id)}
                 onKeyDown={(e) => {
                   if (e.key === "Enter" || e.key === " ") choose(t.id);
                 }}
                 onPointerMove={(e) => {
-                  const svg = e.currentTarget.ownerSVGElement!,
-                    rect = svg.getBoundingClientRect();
+                  const svg = e.currentTarget.ownerSVGElement!;
+                  const matrix = svg.getScreenCTM();
+                  if (!matrix) return;
+                  const pointer = new DOMPoint(e.clientX, e.clientY).matrixTransform(matrix.inverse());
                   const time =
-                    start +
-                    ((((e.clientX - rect.left) / rect.width) * 1000 - 64) /
-                      862) *
-                      (finish - start);
+                    start + ((pointer.x - 64) / 862) * (finish - start);
                   const pts = [...actual, ...projected];
                   const point = pts.reduce((a, b) =>
                     Math.abs(b.time - time) < Math.abs(a.time - time) ? b : a,
@@ -399,15 +384,15 @@ function Timeline({
                 }}
                 onPointerLeave={() => setHover(null)}
               />
-              <circle
+              {nowVisible && <circle
                 cx={X(now)}
                 cy={Y(t.actual)}
                 r={strong ? 5 : 3}
                 fill={t.color}
-              />
-              {strong && (
-                <text x="938" y={Y(t.projected) + 4} style={{ fill: t.color }}>
-                  {n(t.projected)}
+              />}
+              {strong && projected.length > 0 && (
+                <text x="938" y={Y(projected.at(-1)!.value) + 4} style={{ fill: t.color }}>
+                  {n(projected.at(-1)!.value)}
                 </text>
               )}
             </g>
@@ -416,7 +401,7 @@ function Timeline({
       </svg>
       {hover && (
         <div className="mm-chart-tooltip" role="status">
-          {teams.find((t) => t.id === hover.id)?.name} · {n(hover.value)} pts ·{" "}
+          {teams.find((t) => t.id === hover.id)?.name} ({teams.find((t) => t.id === hover.id)?.owner}) · {n(hover.value)} pts ·{" "}
           {new Date(hover.time).toLocaleString("en-US", {
             weekday: "short",
             hour: "numeric",
@@ -435,6 +420,7 @@ function Timeline({
         </span>
       </div>
       <p className="mm-chart-note">
+        {range !== "week" && "Point scale zooms to the visible scores. "}
         {history.length > 1
           ? "History begins when this expedition started recording."
           : "Recording begins now. Actual score trails appear as snapshots accumulate."}{" "}
@@ -592,42 +578,61 @@ export default function MeatMountain() {
   const sheetRef=useRef<HTMLElement>(null);
   const drag = useRef<{ y: number; sheet: number; offset:number; max:number } | null>(null),
     requestId = useRef(0);
-  const refresh = useCallback(async () => {
+  const activeRequest = useRef<AbortController | null>(null);
+  const refresh = useCallback(async (manual = false) => {
+    if (activeRequest.current) return;
+    const controller = new AbortController();
+    activeRequest.current = controller;
     const id = ++requestId.current;
     setLoading(true);
+    setError("");
+    const timeout = setTimeout(() => controller.abort(), 55000);
     try {
-      const response = await fetch(
-        `/api/meat-mountain${week ? `?week=${week}` : ""}`,
-        { cache: "no-store" },
-      );
-      if (!response.ok)
-        throw new Error("Live data is temporarily unavailable.");
-      const next: Race = await response.json();
+      const read = async (fresh: boolean): Promise<Race> => {
+        const response = await fetch(
+          `/api/meat-mountain${week ? `?week=${week}` : ""}`,
+          { method: fresh ? "POST" : "GET", cache: "no-store", signal: controller.signal },
+        );
+        if (!response.ok) throw new Error("Couldn’t refresh. Try again.");
+        return response.json();
+      };
+      let next = await read(manual);
+      if (id !== requestId.current) return;
+      // Show the last known standings while fetching a genuinely fresh response.
+      if (!manual && Date.now() - new Date(next.updatedAt).getTime() > 5 * 60000) {
+        setRace(next);
+        next = await read(true);
+      }
       if (id !== requestId.current) return;
       setRace(next);
-      setError("");
+      setNow(Date.now());
     } catch (e) {
       if (id === requestId.current)
-        setError(e instanceof Error ? e.message : "Unable to update.");
+        setError(e instanceof Error && e.name !== "AbortError" ? e.message : "Refresh timed out. Try again.");
     } finally {
+      clearTimeout(timeout);
+      if (activeRequest.current === controller) activeRequest.current = null;
       if (id === requestId.current) setLoading(false);
     }
   }, [week]);
   useEffect(() => {
-    refresh();
+    void refresh();
     const timer = setInterval(() => {
-      if (!document.hidden) refresh();
+      if (!document.hidden) void refresh();
     }, 60000);
     const visible = () => {
-      if (!document.hidden) refresh();
+      if (!document.hidden) void refresh();
     };
     document.addEventListener("visibilitychange", visible);
+    const cancelRequest = () => {
+      ++requestId.current;
+      activeRequest.current?.abort();
+      activeRequest.current = null;
+    };
     return () => {
       clearInterval(timer);
-      document.removeEventListener(
-        "visibilitychange",
-        visible,
-      ); /* Next refresh invalidates older requests through its request ID. */
+      document.removeEventListener("visibilitychange", visible);
+      cancelRequest();
     };
   }, [refresh]);
   useEffect(() => {
@@ -738,8 +743,8 @@ export default function MeatMountain() {
                     : "CONNECTING"}
           </span>
           <span className="mm-update-controls">
-          <span className={`mm-updated ${age > 180 || error ? "stale" : ""}`} title={error || undefined}>
-            {frame
+          <span className={`mm-updated ${age > 300 || error ? "stale" : ""}`} title={error || (race ? `Last checked ${new Date(race.updatedAt).toLocaleTimeString()}` : undefined)}>
+            {loading ? "Refreshing…" : error ? "Refresh failed · try again" : frame
               ? new Date(frame.at).toLocaleString("en-US", {
                   weekday: "short",
                   hour: "numeric",
@@ -751,7 +756,7 @@ export default function MeatMountain() {
           </span>
           <button
             className="mm-refresh"
-            onClick={refresh}
+            onClick={() => void refresh(true)}
             disabled={loading}
             aria-label={loading ? "Refreshing standings" : "Refresh standings"}
             title={loading ? "Refreshing standings…" : "Refresh standings"}
@@ -803,6 +808,7 @@ export default function MeatMountain() {
             Free data from Sleeper and ESPN, refreshed every minute. Arby’s is
             part of the league joke; this is an independent fan project.
           </p>
+          <p><Link href="/lab/meat-mountain/owners">Admin: edit owner names</Link></p>
         </section>
       )}
       <div className="mm-workspace">
@@ -823,6 +829,7 @@ export default function MeatMountain() {
                 <Mountain teams={teams} selected={selected} choose={choose} />
               ) : (
                 <Timeline
+                  key={`${race.season}-${race.week}`}
                   race={race}
                   teams={teams}
                   selected={selected}
@@ -1000,6 +1007,7 @@ export default function MeatMountain() {
                         <Avatar team={t} />
                         <span>
                           <b>{t.name}</b>
+                          <small className="mm-owner" title={t.owner}>{t.owner}</small>
                           <small>
                             {t.active} live <i>·</i> {t.remaining} left
                           </small>

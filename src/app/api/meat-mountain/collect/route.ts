@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
   )
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   try {
-    const race = await loadRace();
+    const race = await loadRace(undefined, true);
     await saveRace(race);
     return NextResponse.json({
       ok: true,

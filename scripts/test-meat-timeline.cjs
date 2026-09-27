@@ -1,0 +1,30 @@
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const ts = require('typescript');
+const Module = require('node:module');
+const moduleUnderTest = new Module('meat-timeline');
+moduleUnderTest._compile(ts.transpileModule(fs.readFileSync('src/lib/meat-mountain/timeline.ts', 'utf8'), {
+  compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020 },
+}).outputText, 'meat-timeline.js');
+const { clipPoints, projectedPath, scoreScale, timelineWindow } = moduleUnderTest.exports;
+const hour = 3600000, now = Date.parse('2026-09-27T20:00:00Z');
+const race = { history: [{ at: new Date(now - 72 * hour).toISOString() }], updatedAt: new Date(now).toISOString(), end: new Date(now + 27 * hour).toISOString() };
+const window = timelineWindow(race, now, 'hour');
+assert.equal(window.finish - window.start, hour);
+assert.equal(now - window.start, 45 * 60000);
+assert.equal(timelineWindow(race, now, 'day').finish - timelineWindow(race, now, 'day').start, 24 * hour);
+assert.ok(timelineWindow(race, now, 'week').start <= now - 72 * hour);
+assert.ok(timelineWindow(race, now, 'hour', -1).finish < now);
+assert.deepEqual(clipPoints([{ time: 0, value: 0 }, { time: 100, value: 20 }], 25, 75), [{ time: 25, value: 5 }, { time: 75, value: 15 }]);
+assert.deepEqual(clipPoints([{ time: 50, value: 10 }], 0, 25), [], 'No fabricated history before first observation');
+const team = { actual: 100, projected: 120, players: [{ actual: 10, projected: 30, state: 'active', kickoff: new Date(now - hour).toISOString() }] };
+const future = projectedPath(team, now, now + 15 * 60000, now + 27 * hour);
+assert.equal(future[0].value, 100);
+assert.equal(future.at(-1).value, 102, 'Hour zoom shows 15 minutes of expected scoring, not full final score');
+assert.equal(projectedPath(team, now, now + 27 * hour, now + 27 * hour).at(-1).value, 120);
+const scale = scoreScale([99, 100, 102], 'hour');
+assert.ok(scale.min < 99 && scale.top > 102 && scale.top - scale.min < 30);
+assert.equal(scoreScale([99, 100, 102], 'week').min, 0);
+assert.equal(scoreScale([99, 100, 102], 'week').top, 180);
+assert.ok(scoreScale([-4, 2], 'hour').min < -4, 'Negative fantasy scores remain visible');
+console.log('Timeline windows, boundary clipping, projection timing and score scale passed.');

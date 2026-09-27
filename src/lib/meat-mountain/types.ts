@@ -18,6 +18,8 @@ export interface Climber {
   id: number;
   name: string;
   owner: string;
+  ownerId?: string;
+  ownerUsername?: string;
   avatar: string | null;
   color: string;
   actual: number;

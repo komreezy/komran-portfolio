@@ -1,14 +1,30 @@
 import { NextRequest, NextResponse } from "next/server";
-import { unstable_cache } from "next/cache";
+import { revalidateTag, unstable_cache } from "next/cache";
 import { loadRace } from "@/lib/meat-mountain/data";
 import { attachHistory, savedRace } from "@/lib/meat-mountain/storage";
+import { attachOwnerNames } from "@/lib/meat-mountain/owners";
 export const maxDuration = 60;
+const CACHE_TAG = "meat-mountain-live";
+const pending = new Map<string, Promise<Awaited<ReturnType<typeof loadRace>>>>();
+function freshRace(week?: number) {
+  const key = String(week || "current");
+  const existing = pending.get(key);
+  if (existing) return existing;
+  const result = loadRace(week, true).finally(() => pending.delete(key));
+  pending.set(key, result);
+  return result;
+}
 const cached = unstable_cache(
-  async (week?: number) => loadRace(week),
-  ["meat-mountain-v1"],
-  { revalidate: 60 },
+  // Minute buckets expire by key, so polling waits for new data rather than
+  // repeatedly receiving a stale-while-revalidate response.
+  async (week: number | undefined, minute: number) => {
+    void minute;
+    return freshRace(week);
+  },
+  ["meat-mountain-v2"],
+  { revalidate: 120, tags: [CACHE_TAG] },
 );
-export async function GET(request: NextRequest) {
+async function respond(request: NextRequest, fresh: boolean) {
   const input = request.nextUrl.searchParams.get("week");
   const week = input ? Number(input) : undefined;
   if (week !== undefined && (!Number.isInteger(week) || week < 1 || week > 18))
@@ -17,15 +33,22 @@ export async function GET(request: NextRequest) {
       { status: 400 },
     );
   try {
-    const live = await cached(week);
+    const live = fresh
+      ? await freshRace(week)
+      : await cached(week, Math.floor(Date.now() / 60000));
+    if (fresh) revalidateTag(CACHE_TAG, { expire: 0 });
     const saved = await savedRace(live.season, live.week);
     const race =
       live.phase === "final" && saved?.phase === "final"
-        ? { ...saved, updatedAt: live.updatedAt }
+        ? { ...saved, updatedAt: live.updatedAt, teams: saved.teams.map((team) => {
+            const current = live.teams.find((climber) => climber.id === team.id);
+            return current ? { ...team, name: current.name, avatar: current.avatar,
+              owner: current.owner, ownerId: current.ownerId, ownerUsername: current.ownerUsername } : team;
+          }) }
         : live;
-    return NextResponse.json(await attachHistory(race), {
+    return NextResponse.json(await attachOwnerNames(await attachHistory(race)), {
       headers: {
-        "Cache-Control": "public, s-maxage=30, stale-while-revalidate=60",
+        "Cache-Control": "no-store",
       },
     });
   } catch (error) {
@@ -41,4 +64,13 @@ export async function GET(request: NextRequest) {
       { status: 503 },
     );
   }
+}
+
+export async function GET(request: NextRequest) {
+  return respond(request, false);
+}
+// POST is never served by the CDN or browser cache. It reads current scores
+// before responding; only the authenticated collector writes snapshots.
+export async function POST(request: NextRequest) {
+  return respond(request, true);
 }

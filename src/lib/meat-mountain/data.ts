@@ -24,9 +24,9 @@ type Game = {
   kickoff: string | null;
   detail: string;
 };
-async function get<T>(url: string, ttl = 60): Promise<T> {
+async function get<T>(url: string, ttl = 60, fresh = false): Promise<T> {
   const r = await fetch(url, {
-    next: { revalidate: ttl },
+    ...(fresh ? { cache: "no-store" as const } : { next: { revalidate: ttl } }),
     signal: AbortSignal.timeout(18000),
   });
   if (!r.ok) throw new Error(`Data source returned ${r.status}`);
@@ -90,15 +90,18 @@ function teamAlias(team: string) {
     team
   );
 }
-export async function loadRace(requestedWeek?: number): Promise<Race> {
+export async function loadRace(requestedWeek?: number, fresh = false): Promise<Race> {
+  // Keep owner metadata and historical variance cached; live scores and clocks
+  // must be read from the source when someone explicitly requests an update.
+  const read = <T>(url: string, ttl = 60) => get<T>(url, ttl, fresh && ttl < 3600);
   const [league, state, users, rosters] = await Promise.all([
-    get<{
+    read<{
       name: string;
       season: string;
       scoring_settings: Record<string, number>;
     }>(`${ROOT}/v1/league/${LEAGUE}`, 3600),
-    get<{ week: number; season: string }>(`${ROOT}/v1/state/nfl`, 60),
-    get<
+    read<{ week: number; season: string }>(`${ROOT}/v1/state/nfl`, 60),
+    read<
       {
         user_id: string;
         display_name: string;
@@ -106,7 +109,7 @@ export async function loadRace(requestedWeek?: number): Promise<Race> {
         metadata?: { team_name?: string; avatar?: string };
       }[]
     >(`${ROOT}/v1/league/${LEAGUE}/users`, 3600),
-    get<
+    read<
       {
         roster_id: number;
         owner_id: string;
@@ -123,7 +126,7 @@ export async function loadRace(requestedWeek?: number): Promise<Race> {
   const warnings: string[] = [];
   const [matches, projectionRows, schedule, scoreboard, history] =
     await Promise.all([
-      get<
+      read<
         {
           roster_id: number;
           points: number;
@@ -133,11 +136,11 @@ export async function loadRace(requestedWeek?: number): Promise<Race> {
           players_points: Record<string, number>;
         }[]
       >(`${ROOT}/v1/league/${LEAGUE}/matchups/${week}`),
-      get<Stats[]>(
+      read<Stats[]>(
         `${ROOT}/projections/nfl/${season}/${week}?season_type=regular`,
         300,
       ),
-      get<
+      read<
         {
           home: string;
           away: string;
@@ -147,7 +150,7 @@ export async function loadRace(requestedWeek?: number): Promise<Race> {
           date: string;
         }[]
       >(`${ROOT}/schedule/nfl/regular/${season}`, 60),
-      get<{
+      read<{
         events: {
           id: string;
           date: string;
@@ -276,6 +279,8 @@ export async function loadRace(requestedWeek?: number): Promise<Race> {
         user?.display_name ||
         `Team ${m.roster_id}`,
       owner: user?.display_name || "",
+      ownerId: user?.user_id,
+      ownerUsername: user?.display_name || "",
       avatar:
         user?.metadata?.avatar ||
         (user?.avatar
