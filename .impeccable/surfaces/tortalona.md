@@ -16,7 +16,9 @@ The sheet is centered and capped at 1600px. Responsive inset and crown spacing r
 
 ## Record behavior
 
-Retain the semantic leaderboard table, season selector, Goalscorers / Season history tabs, inline admin editor, and match history. The connected nine-game strip fills five recorded games from the initial baseline and leaves four open; do not invent separate game totals for the baseline. The initial record has cumulative totals through game 5 and individual entries for games 6–9. New seasons start with zero baseline and preserve earlier seasons.
+Retain the semantic leaderboard table, season selector, Goalscorers / Team history tabs, inline admin editor, and match ledger. Team history is an intentionally blank panel for future club records, with no season selector or scoring sidebar. Goalscorers offers each saved season and All time. All time sums baseline and individual game goals across all saved seasons by stable player ID, uses the most recent name, and shows a club overview with recorded season/game counts instead of nine-game progress. New seasons retain player IDs and start with zero baseline while preserving earlier seasons. Opening Club admin exits All time and edits a specific season.
+
+The connected nine-game strip fills five recorded games from the initial baseline and leaves four open; do not invent separate game totals for the baseline. The initial record has cumulative totals through game 5 and individual entries for games 6–9.
 
 The `/lab/tortalona/preview` page uses the sample leaderboard Alex 8, Marco 6, Sam 5, Leo 3, and Chris 2, with baseline 5 only. Its footer labels sample data and its top bar links to the live record. The live route has the Club admin action. Admin edits remain a draft until saved; errors preserve the draft and unsaved changes prompt before discard.
 

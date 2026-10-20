@@ -163,11 +163,7 @@
 .tt-ledger { list-style: none; margin: 0; padding: 0; font-size: 13px; }
 .tt-ledger li { display: flex; justify-content: space-between; padding: 8px 0; }
 .tt-ledger strong { font-weight: 600; color: var(--tt-accent); }
-.tt-history > p { font-size: 12px; color: var(--tt-muted); margin: 0 0 24px; max-width: 60ch; }
-.tt-table-scroll { overflow-x: auto; }
-.tt-history .tt-table tbody th { font-size: 30px; white-space: nowrap; }
-.tt-history .tt-table td { font: 700 32px/1.2 TortalonaSport, sans-serif; text-align: right; }
-.tt-history .tt-table thead th { white-space: nowrap; letter-spacing: .06em; padding-left: 16px; padding-right: 16px; }
+.tt-team-history { min-height: 320px; }
 .tt-empty { padding: 42px 18px; min-height: 320px; }
 .tt-empty h3 { font: 400 36px/1.2 TortalonaSerif, Georgia, serif; margin: 12px 0; }
 .tt-empty p { font-size: 13px; color: var(--tt-muted); max-width: 42ch; }

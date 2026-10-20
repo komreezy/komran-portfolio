@@ -3,6 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import type { TortalonaDocument, Season } from "@/lib/tortalona/types";
+import { getScoringTable } from "@/lib/tortalona/standings";
 import "./tortalona.css";
 
 function Flourish() {
@@ -13,6 +14,7 @@ export default function Tortalona({ previewData }: { previewData?: TortalonaDocu
   const [data, setData] = useState<TortalonaDocument | null>(previewData || null);
   const [draft, setDraft] = useState<TortalonaDocument | null>(null);
   const [seasonId, setSeasonId] = useState("");
+  const [allTime, setAllTime] = useState(false);
   const [view, setView] = useState("table");
   const [week, setWeek] = useState(5);
   const [editor, setEditor] = useState(false);
@@ -43,9 +45,9 @@ export default function Tortalona({ previewData }: { previewData?: TortalonaDocu
   const season = source?.seasons.find(s => s.id === seasonId) || source?.seasons[0];
   const games = season ? [...season.games].sort((a,b) => a.week-b.week) : [];
   const played = (season?.baselineGame || 0) + games.length;
-  const goalsFor = (id: string) => (season?.players.find(p => p.id === id)?.baselineGoals || 0) + games.reduce((n,g) => n + (g.goals[id] || 0), 0);
-  const ranked = season ? [...season.players].sort((a,b) => goalsFor(b.id)-goalsFor(a.id) || a.name.localeCompare(b.name)) : [];
-  const total = ranked.reduce((n,p) => n+goalsFor(p.id),0);
+  const ranked = getScoringTable(allTime ? source?.seasons || [] : season ? [season] : []);
+  const total = ranked.reduce((n,p) => n+p.goals,0);
+  const recordedGames = source?.seasons.reduce((n,s) => n+s.baselineGame+s.games.length,0) || 0;
   function update(next: Season) { if (draft) { setDraft({ ...draft, seasons: draft.seasons.map(s => s.id === next.id ? next : s) }); setMessage(""); } }
   async function save() {
     setBusy(true); setError(""); setMessage("");
@@ -64,7 +66,7 @@ export default function Tortalona({ previewData }: { previewData?: TortalonaDocu
   return <main className="tt-app"><div className="tt-sheet">
     <div className="tt-frame" aria-hidden="true" />
     <div className="tt-curtains" aria-hidden="true" />
-    <div className="tt-top"><Link href="/lab">← Back to Lab</Link>{previewData ? <Link href="/lab/tortalona">Live club record →</Link> : <button onClick={() => editor ? closeEditor() : setEditor(true)}>{editor ? "Close editor" : "Club admin"}</button>}</div>
+    <div className="tt-top"><Link href="/lab">← Back to Lab</Link>{previewData ? <Link href="/lab/tortalona">Live club record →</Link> : <button onClick={() => { if (editor) closeEditor(); else { setAllTime(false); setView("table"); setEditor(true); } }}>{editor ? "Close editor" : "Club admin"}</button>}</div>
     <header className="tt-masthead">
       <Image className="tt-crest" src="/lab/tortalona/crest.png" alt="FC Tortalona crest" width={108} height={137} sizes="(max-width: 600px) 54px, (max-width: 1000px) 90px, 128px" preload />
       <h1><span>FC</span> Tortalona</h1>
@@ -83,14 +85,37 @@ export default function Tortalona({ previewData }: { previewData?: TortalonaDocu
       <div className="tt-record-nav">
         <div className="tt-tabs" aria-label="Club record view">
           <button aria-pressed={view==="table"} onClick={()=>setView("table")}>Goalscorers</button>
-          <button aria-pressed={view==="history"} onClick={()=>setView("history")}>Season history</button>
+          <button aria-pressed={view==="history"} onClick={()=>setView("history")}>Team history</button>
         </div>
-        <div className="tt-edition">{season && <select aria-label="Season" value={season.id} onChange={e => { setSeasonId(e.target.value); setWeek(source?.seasons.find(s=>s.id===e.target.value)?.baselineGame || 1); }}>{source?.seasons.map(s=><option key={s.id} value={s.id}>{s.name}</option>)}</select>}</div>
+        {view === "table" && <div className="tt-edition">{season && <select aria-label="Season" value={allTime ? "all-time" : season.id} onChange={e => {
+          const lifetime = e.target.value === "all-time";
+          setAllTime(lifetime);
+          if (!lifetime) { setSeasonId(e.target.value); setWeek(source?.seasons.find(s=>s.id===e.target.value)?.baselineGame || 1); }
+        }}>{source?.seasons.map(s=><option key={s.id} value={s.id}>{s.name}</option>)}{!editor && <option value="all-time">All time</option>}</select>}</div>}
       </div>
-      <div className="tt-content"><section className="tt-main" aria-label={view === "table" ? "Scoring table" : "Season history"}>
-    {!data ? <div className="tt-empty"><h3>{busy ? "Opening the club record…" : "The record is unavailable."}</h3><p>{busy ? "Fetching the latest goals and games." : "Try again to load the latest scoring table."}</p></div> : !ranked.length ? <div className="tt-empty"><span className="tt-empty-number">—</span><h3>A new page in the club record.</h3><p>Add the squad and their goals in Club admin to open the scoring table.</p></div> : view === "table" ? <table className="tt-table"><thead><tr><th scope="col">Rank</th><th scope="col">Player</th><th scope="col">Goals</th></tr></thead><tbody>{ranked.map(p=>{const goals=goalsFor(p.id);const rank=ranked.findIndex(v=>goalsFor(v.id)===goals)+1;return <tr key={p.id} className={goals>0&&goals===goalsFor(ranked[0].id)?"tt-leader":""}><td>{String(rank).padStart(2,"0")}</td><th scope="row"><span className="tt-player-name">{p.name}</span></th><td><span className="tt-goal-value">{goals}</span></td></tr>})}</tbody></table> : <div className="tt-history"><p>Cumulative goals at each recorded game. The smaller number shows goals added that game.</p><div className="tt-table-scroll"><table className="tt-table"><thead><tr><th>Player</th>{season && season.baselineGame>0&&<th>Through G{season.baselineGame}</th>}{games.map(g=><th key={g.week}>G{g.week}</th>)}</tr></thead><tbody>{ranked.map(p=><tr key={p.id}><th scope="row">{p.name}</th>{!!season?.baselineGame&&<td>{p.baselineGoals}</td>}{games.map(g=><td key={g.week}>{p.baselineGoals+games.filter(x=>x.week<=g.week).reduce((n,x)=>n+(x.goals[p.id]||0),0)}<small>+{g.goals[p.id]||0}</small></td>)}</tr>)}</tbody></table></div>{!games.length&&<p className="tt-hint">Weekly history will appear after the next game is recorded.</p>}</div>}
-    <p className="tt-footnote">{season?.baselineGame ? `Totals through game ${season.baselineGame}. Weekly records begin with game ${season.baselineGame+1}.` : "Goals are recorded one game at a time."}</p></section>
-    <aside className="tt-sidebar"><h2><Flourish />Season overview</h2><div className="tt-total"><strong>{data&&ranked.length?total:"—"}</strong><span>team<br/>goals</span></div><div className="tt-progress-heading"><span>Season progress</span><strong>{season ? played : "—"}<span> / {season?.totalGames || 9}</span></strong></div><ol className="tt-season-strip" aria-label="Season progress">{Array.from({length:season?.totalGames||9},(_,i)=>i+1).map(w=>{const recorded=w<=(season?.baselineGame||0)||games.some(g=>g.week===w);const latest=Math.max(season?.baselineGame||0,...games.map(g=>g.week));return <li key={w} className={`${recorded?"played":""} ${w===latest?"current":""}`} title={`Game ${w}: ${recorded?"recorded":"not recorded"}`}><span className="tt-dot" aria-hidden="true"/><span className="tt-sr-only">Game {w}: {recorded?"recorded":"not recorded"}</span></li>;})}</ol><p className="tt-hint">{season ? `${played} recorded · ${season.totalGames-played} remaining` : "Awaiting season record"}</p><h3><Flourish />Match record</h3>{games.length? <ul className="tt-ledger">{games.map(g=><li key={g.week}><span>Game {g.week}</span><strong>{Object.values(g.goals).reduce((a,b)=>a+b,0)} goals</strong></li>)}</ul>:<p className="tt-hint">Game {(season?.baselineGame||0)+1} is next. Its goals will appear here once recorded.</p>}</aside></div></div>
+      {view === "history" ? <section className="tt-team-history" aria-label="Team history" /> : <div className="tt-content">
+        <section className="tt-main" aria-label={allTime ? "All-time scoring table" : "Scoring table"}>
+          {!data ? <div className="tt-empty"><h3>{busy ? "Opening the club record…" : "The record is unavailable."}</h3><p>{busy ? "Fetching the latest goals and games." : "Try again to load the latest scoring table."}</p></div> : !ranked.length ? <div className="tt-empty"><span className="tt-empty-number">—</span><h3>A new page in the club record.</h3><p>Add the squad and their goals in Club admin to open the scoring table.</p></div> : <table className="tt-table">
+            <thead><tr><th scope="col">Rank</th><th scope="col">Player</th><th scope="col">Goals</th></tr></thead>
+            <tbody>{ranked.map(p => {
+              const rank = ranked.findIndex(v=>v.goals===p.goals)+1;
+              return <tr key={p.id} className={p.goals>0&&p.goals===ranked[0].goals?"tt-leader":""}><td>{String(rank).padStart(2,"0")}</td><th scope="row"><span className="tt-player-name">{p.name}</span></th><td><span className="tt-goal-value">{p.goals}</span></td></tr>;
+            })}</tbody>
+          </table>}
+          {data && <p className="tt-footnote">{allTime ? "Totals across all recorded seasons." : season?.baselineGame ? `Includes opening totals through game ${season.baselineGame} and each game recorded since.` : "Goals are recorded one game at a time."}</p>}
+        </section>
+        <aside className="tt-sidebar">
+          <h2><Flourish />{allTime ? "Club overview" : "Season overview"}</h2>
+          <div className="tt-total"><strong>{data&&ranked.length?total:"—"}</strong><span>team<br/>goals</span></div>
+          {allTime ? <ul className="tt-ledger"><li><span>Seasons recorded</span><strong>{source?.seasons.length || 0}</strong></li><li><span>Games recorded</span><strong>{recordedGames}</strong></li></ul> : <>
+            <div className="tt-progress-heading"><span>Season progress</span><strong>{season ? played : "—"}<span> / {season?.totalGames || 9}</span></strong></div>
+            <ol className="tt-season-strip" aria-label="Season progress">{Array.from({length:season?.totalGames||9},(_,i)=>i+1).map(w=>{const recorded=w<=(season?.baselineGame||0)||games.some(g=>g.week===w);const latest=Math.max(season?.baselineGame||0,...games.map(g=>g.week));return <li key={w} className={`${recorded?"played":""} ${w===latest?"current":""}`} title={`Game ${w}: ${recorded?"recorded":"not recorded"}`}><span className="tt-dot" aria-hidden="true"/><span className="tt-sr-only">Game {w}: {recorded?"recorded":"not recorded"}</span></li>;})}</ol>
+            <p className="tt-hint">{season ? `${played} recorded · ${season.totalGames-played} remaining` : "Awaiting season record"}</p>
+            <h3><Flourish />Match record</h3>{games.length? <ul className="tt-ledger">{games.map(g=><li key={g.week}><span>Game {g.week}</span><strong>{Object.values(g.goals).reduce((a,b)=>a+b,0)} goals</strong></li>)}</ul>:<p className="tt-hint">Game {(season?.baselineGame||0)+1} is next. Its goals will appear here once recorded.</p>}
+          </>}
+        </aside>
+      </div>}
+    </div>
     <footer className="tt-footer"><span>{previewData ? "Design preview · Sample names and goals" : "FC Tortalona · The club record"}</span><Link href="/lab">A Komran Lab project ↗</Link></footer>
   </div></main>;
 }
