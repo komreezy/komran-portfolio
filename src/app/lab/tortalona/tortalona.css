@@ -70,15 +70,15 @@
   border-image: url('/lab/tortalona/certificate-frame.webp') 125 round;
   pointer-events: none;
 }
-/* The fabric scales as a single illustration, never stretches to page height. */
+/* The fabric overlays the outer frame, scaling proportionally with the sheet. */
 .tt-curtains {
   position: absolute;
   z-index: -1;
-  top: clamp(14px, 3.2vw, 50px);
-  left: clamp(12px, 2.8vw, 44px);
-  right: clamp(12px, 2.8vw, 44px);
+  top: 0;
+  left: 0;
+  right: 0;
   aspect-ratio: 3 / 2;
-  background: url('/lab/tortalona/curtains-v2.webp') center top / contain no-repeat;
+  background: url('/lab/tortalona/curtains-over-frame.webp') center top / contain no-repeat;
   pointer-events: none;
 }
 .tt-top {
@@ -98,7 +98,7 @@
 .tt-masthead { text-align: center; }
 .tt-crest {
   position: absolute;
-  top: clamp(22px, 3.5vw, 54px);
+  top: clamp(12px, 1.5vw, 24px);
   left: 50%;
   transform: translateX(-50%);
   width: clamp(54px, 8.5vw, 132px);
@@ -195,9 +195,6 @@
 .tt-alert button { text-decoration: underline; margin-left: 15px; background: transparent; border: 0; }
 .tt-status { color: var(--tt-accent); font-size: 13px; margin: 0; }
 .tt-status:not(:empty) { padding: 0 0 20px; }
-@media (min-width: 1101px) {
-  .tt-sheet { --tt-crown: min(calc(8vw + 135px), 263px); }
-}
 @media (max-width: 1100px) {
   .tt-masthead-rule { max-width: 220px; margin-bottom: 6px; }
   .tt-content { gap: 24px; grid-template-columns: minmax(0, 1fr) 205px; }
@@ -229,8 +226,7 @@
 @media (max-width: 520px) {
   .tt-sheet { --tt-inset: 25px; --tt-crown: 130px; padding-bottom: 42px; }
   .tt-frame { border-width: 16px; }
-  .tt-curtains { top: 14px; left: 12px; right: 12px; }
-  .tt-crest { top: 23px; width: 52px; }
+  .tt-crest { width: 52px; }
   .tt-top { top: 94px; font-size: 16px; gap: 12px; }
   .tt-masthead h1 { font-size: clamp(34px, 10.7vw, 54px); }
   .tt-masthead p { font-size: 24px; margin-top: 11px; }
