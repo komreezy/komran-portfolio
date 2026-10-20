@@ -157,6 +157,36 @@
           "oklch(84% 0.06099 81.55)",
           "oklch(95% 0.06099 81.55)"
         ]
+      },
+      "tortalona-paper": {
+        "role": "neutral",
+        "displayName": "Tortalona Paper",
+        "value": "#f7f0df",
+        "scope": "/lab/tortalona"
+      },
+      "tortalona-ink": {
+        "role": "primary",
+        "displayName": "Tortalona Ink",
+        "value": "#15375b",
+        "scope": "/lab/tortalona"
+      },
+      "tortalona-accent": {
+        "role": "secondary",
+        "displayName": "Tortalona Blue",
+        "value": "#315d91",
+        "scope": "/lab/tortalona"
+      },
+      "tortalona-gold": {
+        "role": "secondary",
+        "displayName": "Tortalona Antique Gold",
+        "value": "#ae833e",
+        "scope": "/lab/tortalona"
+      },
+      "tortalona-muted": {
+        "role": "neutral",
+        "displayName": "Tortalona Muted",
+        "value": "#566374",
+        "scope": "/lab/tortalona"
       }
     },
     "typographyMeta": {
@@ -167,6 +197,24 @@
       "portfolio-label": {
         "displayName": "Portfolio mono",
         "purpose": "Shared navigation and compact labels."
+      },
+      "tortalona-sport": {
+        "displayName": "Tortalona sport display",
+        "fontFamily": "TortalonaSport",
+        "purpose": "Scoped Barlow Condensed Bold alias for uppercase player names and goal totals.",
+        "scope": "/lab/tortalona"
+      },
+      "tortalona-serif": {
+        "displayName": "Tortalona certificate serif",
+        "fontFamily": "TortalonaSerif",
+        "purpose": "Scoped Instrument Serif alias for the masthead, navigation, and section headings.",
+        "scope": "/lab/tortalona"
+      },
+      "tortalona-sans": {
+        "displayName": "Tortalona interface sans",
+        "fontFamily": "TortalonaSans",
+        "purpose": "Scoped Manrope alias for interface and helper text.",
+        "scope": "/lab/tortalona"
       }
     },
     "shadows": [
@@ -219,8 +267,48 @@
       {
         "name": "mountain-wide-min",
         "value": "1600px"
+      },
+      {
+        "name": "tortalona-summary-narrow",
+        "value": "1100px"
+      },
+      {
+        "name": "tortalona-mobile-stack",
+        "value": "760px"
+      },
+      {
+        "name": "tortalona-compact-nav",
+        "value": "520px"
       }
-    ]
+    ],
+    "tortalona": {
+      "scope": "/lab/tortalona",
+      "tokens": {
+        "colors": {
+          "paper": "#f7f0df",
+          "ink": "#15375b",
+          "accent": "#315d91",
+          "antiqueGold": "#ae833e",
+          "muted": "#566374"
+        },
+        "typography": {
+          "sport": "TortalonaSport",
+          "serif": "TortalonaSerif",
+          "sans": "TortalonaSans"
+        }
+      },
+      "assets": {
+        "paper": "/lab/tortalona/ivory-paper.webp",
+        "frame": "/lab/tortalona/certificate-frame.webp",
+        "curtains": "/lab/tortalona/curtains-v2.webp",
+        "historicalUnused": "/lab/tortalona/goal-net.webp"
+      },
+      "responsiveBreakpoints": {
+        "summaryNarrow": "1100px",
+        "stackOverview": "760px",
+        "fullWidthRecordNav": "520px"
+      }
+    }
   },
   "components": [
     {

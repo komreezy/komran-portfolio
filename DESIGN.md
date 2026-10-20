@@ -13,6 +13,11 @@ colors:
   mountain-focus: "#a46b14"
   mountain-danger: "#a33427"
   mountain-live: "#f2dab0"
+  tortalona-paper: "#f7f0df"
+  tortalona-ink: "#15375b"
+  tortalona-accent: "#315d91"
+  tortalona-gold: "#ae833e"
+  tortalona-muted: "#566374"
 typography:
   portfolio-label:
     fontFamily: "Geist Mono, monospace"
@@ -37,6 +42,19 @@ typography:
     fontFamily: "Georgia, serif"
     fontSize: "15px"
     lineHeight: 1.5
+  tortalona-display:
+    fontFamily: "TortalonaSerif, Instrument Serif, Georgia, serif"
+    fontSize: "clamp(42px, 8.1vw, 124px)"
+    fontWeight: 400
+    lineHeight: 0.85
+  tortalona-sport:
+    fontFamily: "TortalonaSport, Barlow Condensed, sans-serif"
+    fontSize: "40px"
+    fontWeight: 700
+  tortalona-interface:
+    fontFamily: "TortalonaSans, Manrope, sans-serif"
+    fontSize: "14px"
+    lineHeight: 1.6
 rounded:
   square: "0px"
   mountain-score: "3px"
@@ -182,12 +200,14 @@ Implementation references: `src/app/globals.css`, `src/app/layout.tsx`, `src/com
 
 ## FC Tortalona: Club Record
 
-FC Tortalona at `/lab/tortalona` is a complete, self-contained redesign of the club record. Keep the existing portfolio shell unchanged. Use pale blue-gray porcelain (`#edf2f2`) as the ground, deep ink blue (`#203d4e`) for primary text, sea glass (`#386e78`) for accents, copper (`#986244`) for secondary emphasis, muted blue-gray (`#586f7b`) for secondary text, and translucent ink-blue dividers (`#294e6326`). A transparent gray goal-net texture fills the fixed viewport background, centered so the page ground shows through. The supplied crest stays unchanged. Use Instrument Serif for the masthead and tagline, the existing Barlow Condensed Bold face (`/lab/meat-mountain/display.ttf`) for uppercase player names and numeric goal totals, and Manrope for navigation, labels, and controls. In “FC Tortalona,” FC uses the same font and size as Tortalona. Keep all Tortalona colors and typography scoped to this route.
+The implemented `/lab/tortalona` experience presents the club record as an engraved vintage certificate, scoped to this route so the portfolio shell remains as designed. Its palette is light ivory paper (`#f7f0df`), deep royal-blue ink (`#15375b`), blue accent (`#315d91`), antique gold (`#ae833e`), and muted blue-gray (`#566374`). A 700px repeating ivory-paper texture sits under the content. The certificate frame uses `certificate-frame.webp` as a CSS nine-slice border (`125 round`), so the ornaments follow the document’s height as content grows. The transparent `curtains-v2.webp` remains a 3:2 illustration rendered with `contain`; it scales as a complete ornament across widths instead of stretching with page height. The supplied crest image is unchanged.
 
-The page fills the viewport. A 72px top bar places the Lab return, centered archive label, and club-admin action in one row. Center the masthead beneath it: unchanged crest, large “FC Tortalona” title, and the exact italic tagline “Pasión, Pan, y Pelota.” Set FC and Tortalona in Instrument Serif at the same size. Keep the layout open and restrained, with no separate matchday-programme framing. The record navigation directly joins the season selector and the Goalscorers / Season history tabs above the content. Below, use a flexible scoring table and a 238px season-summary sidebar separated by 50px. Avoid floating cards: fine translucent dividers, clear spacing, and typography structure the page. Use Barlow Condensed Bold for uppercase player names, goal numbers, and the season total; use Manrope for interface labels and Instrument Serif for the title and tagline. The leader row uses a light sea-glass wash with copper rank detail. The sidebar contains the season total, nine-game progress strip, and match ledger; filled dots and connecting lines show recorded games without visible game numbers. Repeat the tagline in the footer. At tablet widths narrow the sidebar and spacing; below 600px the page becomes one column, compresses the masthead and record navigation, and places the season summary after the table. The full-screen goal-net texture is centered behind the page content.
+The desktop sheet is capped at 1600px, with responsive horizontal inset and top crown spacing. The centered masthead overlays the crest and uses Instrument Serif. Its title is uppercase, `clamp(42px, 8.1vw, 124px)` at larger widths and `clamp(34px, 10.7vw, 54px)` at 520px and below, with “FC” inheriting the same font size and style as “Tortalona.” The exact italic tagline is “Pasión, Pan, y Pelota.” Instrument Serif also sets navigation and section headings; Barlow Condensed Bold sets uppercase player names and goal totals. Manrope is the route’s base interface face and supports helper copy and controls. Font-family aliases for design detection are `TortalonaSport`, `TortalonaSerif`, and `TortalonaSans`.
 
-The leaderboard and history tabs switch the main content in place. The leaderboard ranks by total goals and breaks ties alphabetically; the leading row uses a light sea-glass wash (`#bbd3d04a`) without an extra label. History shows cumulative totals at the baseline and each recorded game, with that game’s addition beneath. The opening record treats goals through game 5 as a baseline, then tracks games 6–9 individually. Subsequent seasons use a zero-goal baseline and begin with game 1. The season selector changes the displayed record; the progress strip distinguishes recorded games from remaining games. Empty data and failed requests have distinct messages, and errors offer a retry.
+The semantic scoring table has rank, player, and goals columns; Goalscorers and Season history switch in place, with a season selector. The overview shows team goals, recorded/remaining progress, connected game dots, and the match ledger. The nine-game strip fills all five baseline games and leaves games 6–9 open in the initial record. History shows the cumulative baseline and any recorded games, with the game addition beneath each cumulative value. Never infer weekly values within the baseline. The initial preview sample is Alex 8, Marco 6, Sam 5, Leo 3, and Chris 2, with baseline 5 only.
 
-Club admin expands an inline editor. The password is requested at the point of access; authorized edits remain a draft until Save changes. The editor can update names and goals, mark a game as played, and start a new nine-game season while preserving earlier seasons. Closing with unsaved edits asks before discarding. A save conflict or storage error should keep the draft available and explain the next action. Controls use a visible 2px sea-glass focus outline, rounded corners, and reduced-motion support. The dedicated `/lab/tortalona/preview` route uses sample names and goals, identifies itself as a design preview, links to the live route, and disables the admin entry point.
+At 1100px and below, spacing and the summary sidebar narrow. At 760px and below, the overview stacks after the table. At 520px and below, the tab navigation occupies its own full row and the season selector occupies a full-width row beneath it; masthead and table typography shrink, and the footer stacks. The page keeps content inside the frame and reduces curtain depth for narrow screens.
 
-The Supabase migration `supabase/migrations/20261020000000_tortalona.sql` is pending application in the target database. The live page must show storage failure clearly until that migration and its server environment configuration are in place. Asset provenance is recorded in `public/lab/tortalona/provenance.md`; surface direction is recorded in `.impeccable/surfaces/tortalona.md`.
+The live route provides a Club admin action. The inline editor requests the site admin password, keeps edits as a draft, and supports player names, baseline or game goals, recording a game, and starting a new nine-game season while preserving previous seasons. Failed saves preserve the draft and surface an error; unsaved changes trigger a discard prompt. Reduced-motion preferences disable transitions.
+
+The preview route `/lab/tortalona/preview` uses sample data, identifies it in the footer, links to the live club record from the top bar, and omits the admin action. The Supabase migration `supabase/migrations/20261020000000_tortalona.sql` must be applied before live reads and writes work; storage failures remain distinct from an empty record. Asset prompts and provenance are documented under `public/lab/tortalona/`.
