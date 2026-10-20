@@ -1,0 +1,8 @@
+Instrument Serif Regular and Italic
+https://github.com/google/fonts/blob/main/ofl/instrumentserif/InstrumentSerif-Regular.ttf
+https://github.com/google/fonts/blob/main/ofl/instrumentserif/InstrumentSerif-Italic.ttf
+License: https://github.com/google/fonts/blob/main/ofl/instrumentserif/OFL.txt
+
+Manrope variable font
+https://github.com/google/fonts/blob/main/ofl/manrope/Manrope%5Bwght%5D.ttf
+License: https://github.com/google/fonts/blob/main/ofl/manrope/OFL.txt
