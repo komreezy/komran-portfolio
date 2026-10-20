@@ -10,6 +10,15 @@ export interface LabProject {
 
 export const labProjects: LabProject[] = [
   {
+    id: "tortalona",
+    title: "FC Tortalona",
+    description: "Every goal has a name. The club’s scoring table and season record.",
+    thumbnail: "/lab/tortalona/crest.png",
+    href: "/lab/tortalona",
+    type: "internal",
+    tags: ["Soccer", "Club record"],
+  },
+  {
     id: "meat-mountain",
     title: "Weekly Meat Mountain",
     description:
