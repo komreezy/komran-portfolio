@@ -13,7 +13,7 @@ export const labProjects: LabProject[] = [
     id: "tortalona",
     title: "FC Tortalona",
     description: "Every goal has a name. The club’s scoring table and season record.",
-    thumbnail: "/lab/tortalona/crest.png",
+    thumbnail: "/lab/tortalona/programme-cover.webp",
     href: "/lab/tortalona",
     type: "internal",
     tags: ["Soccer", "Club record"],

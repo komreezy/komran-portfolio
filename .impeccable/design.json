@@ -298,11 +298,12 @@
         }
       },
       "assets": {
+        "cover": "/lab/tortalona/programme-cover.webp",
         "paper": "/lab/tortalona/ivory-paper.webp",
         "frame": "/lab/tortalona/certificate-frame.webp",
-        "curtains": "/lab/tortalona/curtains-over-frame-long.webp",
+        "curtains": "/lab/tortalona/curtains-over-frame.webp",
         "historicalUnused": "/lab/tortalona/goal-net.webp",
-        "historicalCurtainsShort": "/lab/tortalona/curtains-over-frame.webp"
+        "historicalCurtainsLong": "/lab/tortalona/curtains-over-frame-long.webp"
       },
       "responsiveBreakpoints": {
         "summaryNarrow": "1100px",

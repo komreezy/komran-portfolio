@@ -21,6 +21,7 @@ export default function LabProjectCard({ project }: LabProjectCardProps) {
           src={project.thumbnail}
           alt={project.title}
           fill
+          sizes="(max-width: 639px) calc(100vw - 64px), (max-width: 959px) calc(50vw - 40px), 440px"
           className="object-cover transition-smooth group-hover:scale-105 group-hover:opacity-40"
           onError={() => setImageError(true)}
         />
