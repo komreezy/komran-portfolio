@@ -300,8 +300,9 @@
       "assets": {
         "paper": "/lab/tortalona/ivory-paper.webp",
         "frame": "/lab/tortalona/certificate-frame.webp",
-        "curtains": "/lab/tortalona/curtains-over-frame.webp",
-        "historicalUnused": "/lab/tortalona/goal-net.webp"
+        "curtains": "/lab/tortalona/curtains-over-frame-long.webp",
+        "historicalUnused": "/lab/tortalona/goal-net.webp",
+        "historicalCurtainsShort": "/lab/tortalona/curtains-over-frame.webp"
       },
       "responsiveBreakpoints": {
         "summaryNarrow": "1100px",

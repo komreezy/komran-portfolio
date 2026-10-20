@@ -78,7 +78,7 @@
   left: 0;
   right: 0;
   aspect-ratio: 3 / 2;
-  background: url('/lab/tortalona/curtains-over-frame.webp') center top / contain no-repeat;
+  background: url('/lab/tortalona/curtains-over-frame-long.webp') center top / contain no-repeat;
   pointer-events: none;
 }
 .tt-top {
