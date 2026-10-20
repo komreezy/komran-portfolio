@@ -70,20 +70,29 @@
   border-image: url('/lab/tortalona/certificate-frame.webp') 125 round;
   pointer-events: none;
 }
-/* The fabric overlays the outer frame, scaling proportionally with the sheet. */
+/* Two 1536px halves retain detail across the 1600px sheet on Retina displays.
+   The short drapes retain approximately the same height as the former overlay. */
 .tt-curtains {
   position: absolute;
   z-index: -1;
   top: 0;
   left: 0;
   right: 0;
-  aspect-ratio: 3 / 2;
-  background: url('/lab/tortalona/curtains-over-frame.webp') center top / contain no-repeat;
+  aspect-ratio: 8 / 3;
   pointer-events: none;
 }
+.tt-curtains::before, .tt-curtains::after {
+  content: '';
+  position: absolute;
+  inset-block: 0;
+  width: 50%;
+  background: url('/lab/tortalona/curtain-half-retina.webp') left top / 100% 100% no-repeat;
+}
+.tt-curtains::before { left: 0; }
+.tt-curtains::after { right: 0; transform: scaleX(-1); }
 .tt-top {
   position: absolute;
-  top: calc(var(--tt-crown) - 36px);
+  top: calc(var(--tt-crown) - 16px);
   left: var(--tt-inset);
   right: var(--tt-inset);
   display: flex;

@@ -301,7 +301,8 @@
         "cover": "/lab/tortalona/programme-cover.webp",
         "paper": "/lab/tortalona/ivory-paper.webp",
         "frame": "/lab/tortalona/certificate-frame.webp",
-        "curtains": "/lab/tortalona/curtains-over-frame.webp",
+        "curtains": "/lab/tortalona/curtain-half-retina.webp",
+        "historicalCurtains": "/lab/tortalona/curtains-over-frame.webp",
         "historicalUnused": "/lab/tortalona/goal-net.webp",
         "historicalCurtainsLong": "/lab/tortalona/curtains-over-frame-long.webp"
       },
